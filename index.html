@@ -106,6 +106,14 @@ details.det .full{margin:var(--sp1) 0 0;padding:var(--sp2) var(--sp3);background
 .bar .un.zero{color:var(--green)}
 .bar progress{width:140px;height:12px;accent-color:var(--navy)}
 .bar .sp{flex:1 1 0}
+.msg p{margin:0 0 var(--sp2)}
+.cmp{display:flex;flex-wrap:wrap;gap:var(--sp2) var(--sp3);align-items:center;margin-top:var(--sp3);padding:var(--sp2) var(--sp3);background:var(--navy-l);border:1px solid #b8c8de;border-radius:6px;color:var(--navy-d)}
+.cmp-c{display:flex;flex-direction:column;gap:var(--sp1);align-items:flex-start}
+.cmp-l{font-size:var(--fs-note);color:var(--muted)}
+.cmp-a{font-size:var(--fs-title);font-weight:700;color:var(--navy)}
+.cmp-n{flex:1 1 100%;margin:0;font-size:var(--fs-note)}
+.item.compact .cmp{flex:1 1 100%;margin-top:0}
+.item .msg{margin:var(--sp2) 0 0}
 dl.kv{display:grid;grid-template-columns:max-content 1fr;gap:var(--sp1) var(--sp4);margin:var(--sp2) 0}
 dl.kv dt{color:var(--muted)}dl.kv dd{margin:0;font-weight:700}
 .ok-t{color:var(--green)}.ng-t{color:var(--red)}
@@ -566,7 +574,8 @@ const S = {
   resFilter: 'all',   // 画面③の絞り込み（表示だけを変える）
   openAll: false,     // 画面③ 詳細の一括開閉
   edit: new Set(),    // 画面④ 再編集中の確定済みカード
-  lastId: 0           // 画面④ 最後に操作したカード
+  lastId: 0,          // 画面④ 最後に操作したカード
+  keep: new Set()     // 画面④ 絞り込み「仕分けと異なる明細」で、解消直後に一時表示を維持するカード
 };
 const app = document.getElementById('app');
 const STEPS = ['プロフィール入力','CSV読み込み','仕分け結果','明細の確認','最終確認・CSV出力'];
@@ -635,7 +644,7 @@ function loadText(text, fileName){
   try {
     const res = parseStatement(text, fileName);       // 解析に成功してから置換する
     S.format = res.format; S.records = res.records; S.stats = res.stats; S.loadError = ''; S.reclass = null;
-    S.edit = new Set(); S.lastId = 0; S.filter = 'all'; S.resFilter = 'all';
+    S.edit = new Set(); S.keep = new Set(); S.lastId = 0; S.filter = 'all'; S.resFilter = 'all';
     classifyAll(S.records, S.profile); S.profileChanged = false;
   } catch (e) { S.loadError = e.message; }               // 失敗時は既存データを維持
   render();
@@ -709,6 +718,23 @@ function reclassBanner(){
   if (!S.reclass) return null;
   return h('div', { class: 'msg warn' }, 'プロフィールの変更により再仕分けしました。ツール仕分けが変わった明細：' + S.reclass.changed + '件。確定済みの最終区分は維持しています。ツール仕分けと最終区分が食い違う明細：' + S.reclass.diffs + '件（該当行に表示しています。画面④で再変更できます）。');
 }
+/* ---- 画面④⑤の「仕分けと異なる明細」用の部品 ---- */
+function reclassInfo(){   // 画面④：再仕分けの通知（情報として扱い、本人の最終判断を尊重する文言）
+  if (!S.reclass) return null;
+  return h('div', { class: 'msg info' }, 'プロフィールの変更により再仕分けしました。ツール仕分けが変わった明細：' + S.reclass.changed + '件。確定済みの最終区分は、あなたの判断として維持しています。ツールの仕分けと異なる確定は、絞り込み「仕分けと異なる明細」で確認できます。');
+}
+function compareBox(r){
+  return h('div', { class: 'cmp', role: 'group', 'aria-label': 'ツールの仕分けとあなたの最終区分の比較' },
+    h('div', { class: 'cmp-c' }, h('span', { class: 'cmp-l' }, 'ツールの仕分け'), badge(r.toolCategory)),
+    h('span', { class: 'cmp-a', 'aria-hidden': 'true' }, '→'),
+    h('div', { class: 'cmp-c' }, h('span', { class: 'cmp-l' }, 'あなたの最終区分'), h('span', { class: 'badge fin' }, '確定：' + r.finalCategory)),
+    h('p', { class: 'cmp-n' }, '仕分けと異なります。理由を確認し、このままでよければ変更は不要です。あなたの判断が優先されます。'));
+}
+function focusFirstCard(){
+  const c = document.querySelector('#items .item'); if (!c) return false;
+  c.scrollIntoView({ block: 'center' });
+  const x = c.querySelector('.chg') || c.querySelector('.choice button'); if (x) x.focus(); return !!x;
+}
 function screenResult(){
   const cnt = c => S.records.filter(r => r.toolCategory === c).length;
   const tbody = h('tbody', { id: 'resBody' }); const info = h('p', { class: 'note', role: 'status' });
@@ -747,21 +773,32 @@ function screenConfirm(){
   const note = h('div');
   const next = h('button', { type: 'button', class: 'btn', id: 'nextBtn' }, '次の未確認へ');
   const sel = h('select', { id: 'flt', 'aria-label': '表示の絞り込み' },
-    [['all','すべて'],['un','未確認のみ'],[CAT.BIZ, CAT.BIZ],[CAT.PRIV, CAT.PRIV],[CAT.CHK, CAT.CHK]].map(([v, t]) => h('option', { value: v }, t)));
+    [['all','すべて'],['un','未確認のみ'],['diff','仕分けと異なる明細（0件）'],[CAT.BIZ, CAT.BIZ],[CAT.PRIV, CAT.PRIV],[CAT.CHK, CAT.CHK]].map(([v, t]) => h('option', { value: v }, t)));
+  const optDiff = sel.querySelector('option[value="diff"]');
+  S.keep = new Set();   // 画面を開き直したときは、最新の不一致状態で一覧を作る
   sel.value = S.filter;
-  const visible = r => S.filter === 'all' || (S.filter === 'un' ? !r.finalCategory : r.toolCategory === S.filter);
+  // 「仕分けと異なる明細」：ツールが要判断の明細・未確認の明細は含めない（finalDiff）。解消直後のカードだけ、次の絞り込みまで一時的に表示を維持する
+  const visible = r => S.filter === 'all' || (S.filter === 'un' ? !r.finalCategory : S.filter === 'diff' ? (finalDiff(r) || S.keep.has(r.id)) : r.toolCategory === S.filter);
   const card = id => list.querySelector('[data-id="' + id + '"]');
   function refreshBar(){
     const n = unconfirmed(); un.textContent = '未確認 ' + n + '件 / 全' + S.records.length + '件'; un.className = 'un' + (n === 0 ? ' zero' : '');
     prog.value = S.records.length - n; next.disabled = n === 0;
     const d = S.records.filter(finalDiff).length;
-    note.replaceChildren(d ? h('div', { class: 'msg warn' }, 'ツール仕分けと最終区分が食い違う明細が' + d + '件あります（該当カードに表示）。必要に応じて再変更できます。') : '');
+    optDiff.textContent = '仕分けと異なる明細（' + d + '件）';
+    note.replaceChildren(d
+      ? h('div', { class: 'msg info' },
+          h('p', null, '仕分けと異なる確定が' + d + '件あります。あなたが確定した区分が優先されます。確認のための情報で、エラーではありません。出力もできます。'),
+          h('button', { type: 'button', class: 'btn sub', id: 'showDiff', onclick: showDiff }, '仕分けと異なる明細を表示'))
+      : (n === 0 ? h('div', { class: 'msg ok' }, '全件確定済みで、仕分けと異なる確定はありません。') : ''));
   }
   const head = r => h('div', { class: 'h' }, h('span', { class: 't' }, r.dateRaw + '　' + r.desc, kindTag(r)),
     h('span', null, h('b', null, amountText(r)), '　', badge(r.toolCategory)));
   const diffNotes = r => [
     r.reclassFrom ? h('div', { class: 'warn-t' }, 'プロフィール変更により、ツール仕分けが「' + r.reclassFrom + '」から「' + r.toolCategory + '」に変わりました。') : null,
-    finalDiff(r) ? h('div', { class: 'warn-t' }, 'ツール仕分けは「' + r.toolCategory + '」ですが、最終区分は「' + r.finalCategory + '」で確定されています。') : null];
+    finalDiff(r) ? compareBox(r) : null,   // ツールの仕分けと本人の最終区分を並べて表示（フル表示・コンパクト表示の両方）
+    (S.keep.has(r.id) && !finalDiff(r)) ? h('div', { class: 'msg info' }, r.finalCategory
+      ? '仕分けと一致しました。次の絞り込み操作で、この明細は「仕分けと異なる明細」の一覧から除外されます。'
+      : '未確認に戻したため、仕分けと異なる明細の対象外になりました。次の絞り込み操作で、この一覧から除外されます。') : null];
   function fullCard(r){
     const mk = v => h('button', { type: 'button', 'aria-pressed': r.finalCategory === v ? 'true' : 'false', onclick: () => choose(r, v) }, v);
     return h('div', { class: 'item ' + catClass(r.toolCategory), 'data-id': r.id },
@@ -781,16 +818,31 @@ function screenConfirm(){
     const old = card(r.id); if (old) old.replaceWith(row(r));
     refreshBar(); const el = card(r.id); const f = el && el.querySelector(focusSel); if (f) f.focus();
   }
-  function choose(r, v){ r.finalCategory = v; S.edit.delete(r.id); S.lastId = r.id; swap(r, '.chg');
-    live('「' + r.desc.trim() + '」を「' + v + '」で確定しました。未確認は残り' + unconfirmed() + '件です。'); }
-  function reset(r){ r.finalCategory = null; S.edit.delete(r.id); S.lastId = r.id; swap(r, '.choice button');
-    live('「' + r.desc.trim() + '」を未確認に戻しました。未確認は' + unconfirmed() + '件です。'); }
+  function afterChange(r, was, msg){
+    const resolved = was && !finalDiff(r) && S.filter === 'diff';   // 絞り込み中に解消した場合は、一覧からすぐに消さない
+    if (resolved) S.keep.add(r.id); else S.keep.delete(r.id);
+    return resolved;
+  }
+  function choose(r, v){ const was = finalDiff(r); r.finalCategory = v; S.edit.delete(r.id); S.lastId = r.id; const resolved = afterChange(r, was);
+    swap(r, '.chg');
+    live('「' + r.desc.trim() + '」を「' + v + '」で確定しました。' + (resolved ? '仕分けと一致しました。次の絞り込み操作で、この一覧から除外されます。' : '') + '未確認は残り' + unconfirmed() + '件、仕分けと異なる明細は' + S.records.filter(finalDiff).length + '件です。'); }
+  function reset(r){ const was = finalDiff(r); r.finalCategory = null; S.edit.delete(r.id); S.lastId = r.id; const resolved = afterChange(r, was);
+    swap(r, '.choice button');
+    live('「' + r.desc.trim() + '」を未確認に戻しました。' + (resolved ? '仕分けと異なる明細の対象外になりました。次の絞り込み操作で、この一覧から除外されます。' : '') + '未確認は' + unconfirmed() + '件、仕分けと異なる明細は' + S.records.filter(finalDiff).length + '件です。'); }
+  function showDiff(){ sel.value = 'diff'; fill(); focusFirstCard(); live('仕分けと異なる明細を' + S.records.filter(finalDiff).length + '件表示しました。'); }
+  function emptyNote(){
+    const d = S.records.filter(finalDiff).length;
+    if (S.filter === 'un') return h('div', null, h('p', { class: 'note' }, '未確認の明細はありません（全件確定済みです）'),
+      d ? h('button', { type: 'button', class: 'btn sub', onclick: showDiff }, '仕分けと異なる明細（' + d + '件）を見る') : null);
+    if (S.filter === 'diff') return h('p', { class: 'note' }, '仕分けと異なる明細はありません。（ツールの仕分けが「要判断」の明細と、未確認の明細は対象に含めません）');
+    return h('p', { class: 'note' }, '該当する明細はありません。');
+  }
   function openEdit(r){ S.edit.add(r.id); S.lastId = r.id; swap(r, '.choice button[aria-pressed="true"]'); }
   function closeEdit(r){ S.edit.delete(r.id); swap(r, '.chg'); }
   function fill(){
-    S.filter = sel.value;
+    S.filter = sel.value; S.keep = new Set();   // 絞り込み操作のたびに、最新の状態で一覧を作る
     const f = S.records.filter(visible);
-    list.replaceChildren(...f.map(row), f.length ? '' : h('p', { class: 'note' }, '該当する明細はありません。')); refreshBar();
+    list.replaceChildren(...f.map(row), f.length ? '' : emptyNote()); refreshBar();
   }
   sel.addEventListener('change', fill);
   function goNext(){   // 次の未確認カードへ移動するだけ。自動確定はしない
@@ -809,7 +861,7 @@ function screenConfirm(){
   fill();
   return h('div', null, h('div', { class: 'card' }, h('h2', null, '④ 明細の確認'),
     h('p', { class: 'note' }, '全明細について、理由を確認して最終区分を「事業」または「私用」から選んでください。要判断の明細も、本人が選ぶまで確定されません。確定済みの明細は「変更する」でいつでも再編集できます。'),
-    reclassBanner()),
+    reclassInfo()),
     h('div', { class: 'bar' }, un, prog, h('span', { class: 'sp' }),
       h('label', { for: 'flt', style: 'margin:0;font-weight:400' }, '絞り込み'), sel, next), note, list,
     h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn', onclick: () => go(5) }, '最終確認へ進む')));
@@ -850,7 +902,9 @@ function screenFinal(){
       h('dt', null, '画面表示件数'), h('dd', null, shown + '件'),
       h('dt', null, '出力件数'), h('dd', null, v.outCount + '件', mark(countOk)),
       h('dt', null, '金額合計（元データ→出力）'), h('dd', null, fmtYen(v.inSum) + '円 → ' + fmtYen(v.outSum) + '円', mark(sumOk))),
-    diffs ? h('div', { class: 'msg warn' }, 'ツール仕分けと最終区分が食い違う明細が' + diffs + '件あります。内容を確認のうえ、このまま出力するか画面④で再変更してください。') : null,
+    diffs ? h('div', { class: 'msg info' },
+      h('p', null, 'ツールの仕分けと異なる最終区分が' + diffs + '件あります。あなたの判断が優先されます。確認のための情報で、エラーではありません。このまま出力できます。'),
+      h('button', { type: 'button', class: 'btn sub', onclick: () => { S.filter = 'diff'; go(4); focusFirstCard(); } }, '仕分けと異なる明細を画面④で表示')) : null,
     dups ? h('div', { class: 'msg info' }, '重複の可能性がある明細が' + dups + '件あります（削除せずすべて出力します。理由欄に注記しています）。') : null,
     csv.altered.length
       ? h('div', { class: 'msg warn' }, '次の' + csv.altered.length + '件は、表計算ソフトでの数式誤実行を防ぐため、出力CSVの値の先頭に「\'」を付けます（原文とは異なる出力になります。元データは変更していません）。',
