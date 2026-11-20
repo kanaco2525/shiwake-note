@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<title>SHIWAKE NOTE</title>
+<style>
+:root{
+  /* 色：ネイビー基調。区分色は文字ラベルと併用する */
+  --navy:#1f3a5f; --navy-d:#14284b; --navy-l:#e8eef6;
+  --green:#176b3f; --green-bg:#e6f4ec;
+  --gray:#4f5a68; --gray-bg:#eceef1;
+  --orange:#a34f00; --orange-bg:#fff0de;
+  --red:#a8211a; --red-bg:#fdecea;
+  --text:#1c2430; --muted:#4f5a68; --line:#d5dbe3; --ctl:#66717f; --bg:#f5f7fa; --card:#fff; --focus:#1d4ed8;
+  /* 文字サイズ（4段階）と余白（4・8・12・16・24） */
+  --fs-title:20px; --fs-head:16px; --fs-body:16px; --fs-note:14px;
+  --sp1:4px; --sp2:8px; --sp3:12px; --sp4:16px; --sp5:24px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hiragino Sans","Yu Gothic UI","Meiryo",system-ui,sans-serif;color:var(--text);background:var(--bg);line-height:1.65;font-size:var(--fs-body)}
+.skip{position:absolute;left:var(--sp2);top:-60px;background:#fff;color:var(--navy-d);padding:var(--sp2) var(--sp4);border:2px solid var(--navy);border-radius:6px;z-index:20;font-weight:700}
+.skip:focus{top:var(--sp2)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+header.top{background:var(--navy);color:#fff;padding:var(--sp3) var(--sp4)}
+header.top .in{max-width:1080px;margin:0 auto;display:flex;align-items:baseline;gap:var(--sp3);flex-wrap:wrap}
+header.top h1{margin:0;font-size:var(--fs-title);letter-spacing:.08em}
+header.top p{margin:0;font-size:var(--fs-note)}
+main{max-width:1080px;margin:0 auto;padding:var(--sp4)}
+main:focus{outline:none}
+h2{margin:0 0 var(--sp2);font-size:var(--fs-title);line-height:1.4;color:var(--navy)}
+h2:focus{outline:none}
+h3{margin:var(--sp4) 0 var(--sp2);font-size:var(--fs-head);color:var(--navy)}
+p{margin:0 0 var(--sp3)}
+.note{font-size:var(--fs-note);color:var(--muted);margin:0 0 var(--sp3)}
+.warn-t{font-size:var(--fs-note);color:var(--orange);margin-top:var(--sp1)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:var(--sp4);margin-bottom:var(--sp4)}
+/* 進行状況 */
+nav.stp{margin-bottom:var(--sp4)}
+ol.steps{list-style:none;display:flex;gap:var(--sp2);margin:0;padding:0}
+ol.steps li{flex:1 1 0;min-width:0}
+ol.steps button{width:100%;min-height:44px;border:1px solid var(--ctl);background:#fff;color:var(--navy-d);border-radius:6px;padding:var(--sp2);font:inherit;font-size:var(--fs-note);cursor:pointer;display:flex;gap:var(--sp2);align-items:center;justify-content:center}
+ol.steps .n{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;border-radius:12px;border:1px solid currentColor;font-weight:700}
+ol.steps button[disabled]{color:var(--muted);background:#e9ecf0;border-color:var(--line);cursor:not-allowed}
+ol.steps li.done button{border-color:var(--navy);color:var(--navy)}
+ol.steps li.cur button{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:700}
+.step-cur{display:none;margin:var(--sp2) 0 0;font-weight:700;color:var(--navy)}
+/* フォーム・ボタン */
+label{display:block;font-weight:700;margin:var(--sp3) 0 var(--sp1)}
+.req{color:var(--red);font-size:var(--fs-note);margin-left:var(--sp2)}
+textarea{width:100%;min-height:84px;font:inherit;padding:var(--sp2) var(--sp3);border:1px solid var(--ctl);border-radius:6px;resize:vertical}
+select{min-height:44px;font:inherit;padding:var(--sp1) var(--sp2);border:1px solid var(--ctl);border-radius:6px;background:#fff;color:var(--text)}
+textarea:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.btn{min-height:44px;padding:var(--sp2) var(--sp4);border-radius:6px;border:1px solid var(--navy);background:var(--navy);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.btn.sub{background:#fff;color:var(--navy)}
+.btn[disabled]{background:#dfe3e9;border-color:#c3cad4;color:#4f5a68;cursor:not-allowed}
+.row{display:flex;gap:var(--sp3);flex-wrap:wrap;align-items:center;margin-top:var(--sp3)}
+.msg{padding:var(--sp3);border-radius:6px;margin:var(--sp3) 0;font-size:var(--fs-note);border:1px solid}
+.msg.err{background:var(--red-bg);border-color:#e6a8a3;color:var(--red)}
+.msg.warn{background:var(--orange-bg);border-color:#efc48f;color:#7a3d00}
+.msg.ok{background:var(--green-bg);border-color:#a8d5bb;color:#0f5a33}
+.msg.info{background:var(--navy-l);border-color:#b8c8de;color:var(--navy-d)}
+.msg:focus{outline:none}
+/* 件数カード */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--sp3);margin:var(--sp2) 0 var(--sp3)}
+.stat{border:1px solid var(--line);border-radius:8px;padding:var(--sp3);background:#fff}
+.stat b{display:block;font-size:var(--fs-title);line-height:1.3}
+.stat span{font-size:var(--fs-note);color:var(--muted)}
+.stat.biz{border-left:6px solid var(--green)}.stat.priv{border-left:6px solid var(--gray)}.stat.chk{border-left:6px solid var(--orange)}.stat.un{border-left:6px solid var(--navy)}
+.badge{display:inline-block;padding:0 var(--sp3);border-radius:12px;font-size:var(--fs-note);font-weight:700;white-space:nowrap}
+.badge.biz{background:var(--green-bg);color:var(--green);border:1px solid var(--green)}
+.badge.priv{background:var(--gray-bg);color:var(--gray);border:1px solid var(--gray)}
+.badge.chk{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange)}
+.badge.fin{background:var(--navy);color:#fff;border:1px solid var(--navy)}
+.badge.none{background:#fff;color:var(--muted);border:1px dashed var(--muted)}
+.tag{display:inline-block;font-size:var(--fs-note);border:1px solid var(--muted);color:var(--muted);border-radius:4px;padding:0 var(--sp1);margin-left:var(--sp1)}
+/* 絞り込み */
+.chips{display:flex;gap:var(--sp2);flex-wrap:wrap;margin:var(--sp2) 0}
+.chip{min-height:44px;padding:var(--sp1) var(--sp3);border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:22px;font:inherit;font-size:var(--fs-note);font-weight:700;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--navy);color:#fff}
+/* 表（画面③） */
+table{width:100%;border-collapse:collapse;font-size:var(--fs-note)}
+th,td{border-bottom:1px solid var(--line);padding:var(--sp2) var(--sp1);text-align:left;vertical-align:top}
+th{background:var(--navy-l);color:var(--navy-d)}
+td.num,th.num{text-align:right;white-space:nowrap}
+td.desc{font-size:var(--fs-body);word-break:break-word}
+.sum{font-size:var(--fs-note)}
+details.det{margin-top:var(--sp1)}
+details.det summary{cursor:pointer;color:var(--navy);font-weight:700;font-size:var(--fs-note);min-height:24px;padding:var(--sp1) 0}
+details.det .full{margin:var(--sp1) 0 0;padding:var(--sp2) var(--sp3);background:var(--navy-l);border-radius:6px;font-size:var(--fs-note);color:var(--text)}
+/* 画面④のカード */
+.item{border:1px solid var(--line);border-left:6px solid var(--line);border-radius:8px;padding:var(--sp3);margin-bottom:var(--sp3);background:#fff}
+.item.biz{border-left-color:var(--green)}.item.priv{border-left-color:var(--gray)}.item.chk{border-left-color:var(--orange)}
+.item .h{display:flex;gap:var(--sp2);flex-wrap:wrap;align-items:baseline;justify-content:space-between}
+.item .t{font-weight:700;word-break:break-word}
+.item .reason{font-size:var(--fs-note);margin:var(--sp2) 0 0}
+.item.compact{padding:var(--sp2) var(--sp3);display:flex;gap:var(--sp2) var(--sp3);flex-wrap:wrap;align-items:center}
+.item.compact .t{flex:1 1 220px;font-weight:400}
+.choice{display:flex;gap:var(--sp2);margin-top:var(--sp3);flex-wrap:wrap;align-items:center}
+.choice button,.chg{min-height:44px;min-width:96px;border:2px solid var(--navy);background:#fff;color:var(--navy);border-radius:6px;font:inherit;font-weight:700;cursor:pointer;padding:0 var(--sp3)}
+.choice button[aria-pressed="true"]{background:var(--navy);color:#fff}
+.choice .plain{border-width:1px;font-weight:400}
+.bar{position:sticky;top:0;z-index:5;background:#fff;border:1px solid var(--line);border-radius:8px;padding:var(--sp2) var(--sp3);margin-bottom:var(--sp3);display:flex;gap:var(--sp2) var(--sp3);flex-wrap:wrap;align-items:center}
+.bar .un{font-weight:700;color:var(--orange)}
+.bar .un.zero{color:var(--green)}
+.bar progress{width:140px;height:12px;accent-color:var(--navy)}
+.bar .sp{flex:1 1 0}
+dl.kv{display:grid;grid-template-columns:max-content 1fr;gap:var(--sp1) var(--sp4);margin:var(--sp2) 0}
+dl.kv dt{color:var(--muted)}dl.kv dd{margin:0;font-weight:700}
+.ok-t{color:var(--green)}.ng-t{color:var(--red)}
+ul.sm{margin:var(--sp1) 0 0;padding-left:20px;font-size:var(--fs-note)}
+details.fold summary{cursor:pointer;color:var(--navy);font-weight:700;font-size:var(--fs-note);padding:var(--sp1) 0}
+footer{max-width:1080px;margin:0 auto;padding:var(--sp2) var(--sp4) var(--sp5);font-size:var(--fs-note);color:var(--muted)}
+footer .disc{border:1px solid var(--line);background:#fff;border-radius:6px;padding:var(--sp2) var(--sp3)}
+@media (max-width:720px){
+  main{padding:var(--sp3)}
+  ol.steps .lbl{display:none}
+  ol.steps button{padding:var(--sp1)}
+  .step-cur{display:block}
+  table.res thead{display:none}
+  table.res,table.res tbody,table.res tr,table.res td{display:block;width:100%}
+  table.res tr{border:1px solid var(--line);border-radius:8px;margin-bottom:var(--sp3);padding:var(--sp2) var(--sp3);background:#fff}
+  table.res td{border:none;padding:var(--sp1) 0;text-align:left}
+  table.res td.num{text-align:left}
+  table.res td::before{content:attr(data-l) "：";color:var(--muted);font-size:var(--fs-note)}
+  details.det summary,details.fold summary{display:flex;align-items:center;min-height:44px}
+  .bar progress{width:100%}
+  dl.kv{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#app">本文へ移動</a>
+<header class="top"><div class="in"><h1>SHIWAKE NOTE</h1><p>副業のカード・銀行明細を整理するツール（処理はこのブラウザ内だけで行います）</p></div></header>
+<main id="app" tabindex="-1"></main>
+<div id="live" class="sr" role="status" aria-live="polite"></div>
+<footer id="foot"></footer>
+
+<script>
+'use strict';
+/* =====================================================================
+   SHIWAKE NOTE — 単一HTML / 外部通信なし / 永続保存なし
+   ===================================================================== */
+
+// ==CORE-START== （DOMに依存しない処理。テスト用に分離）
+const DISCLAIMER_TEXT = '本ツールは明細の整理を補助するものです。経費への算入可否の判断は行いません。最終的な判断はご自身または税理士・税務署等にご確認ください。'; // コンペ指定の免責文（一字一句変更しない）
+const OUT_HEADERS = ['日付','摘要','金額','ツール仕分け','最終区分','理由'];
+const CAT = { BIZ:'事業候補', PRIV:'私用候補', CHK:'要判断' };
+// 初版の暫定しきい値（調整しやすいよう定数化）
+const TH = { BIZ_MIN:5, BIZ_PRIV_MAX:2, PRIV_MIN:4, PRIV_BIZ_MAX:2, W_BIZ:3, W_PRIV:4, W_PROFILE:2 };
+
+const nfkc = s => String(s == null ? '' : s).normalize('NFKC');
+const pad2 = n => String(n).padStart(2, '0');
+const fmtYen = n => (n == null ? '' : n.toLocaleString('ja-JP'));
+
+/* ---- 文字コード ---- */
+function decodeBytes(buf){
+  let b = new Uint8Array(buf);
+  if (b.length >= 3 && b[0] === 0xEF && b[1] === 0xBB && b[2] === 0xBF) b = b.subarray(3);
+  try { return new TextDecoder('utf-8', { fatal:true }).decode(b); }
+  catch (e) { throw new Error('UTF-8として読み取れませんでした（UTF-8 / UTF-8 BOM付きのCSVに対応しています）。'); }
+}
+
+/* ---- RFC4180 パーサ ---- */
+function parseCsv(text){
+  const rows = []; let row = [], f = '', q = false, i = 0; const n = text.length;
+  while (i < n) {
+    const c = text[i];
+    if (q) {
+      if (c === '"') { if (text[i+1] === '"') { f += '"'; i += 2; continue; } q = false; i++; continue; }
+      f += c; i++; continue;
+    }
+    if (c === '"' && f === '') { q = true; i++; continue; }
+    if (c === ',') { row.push(f); f = ''; i++; continue; }
+    if (c === '\r' || c === '\n') { if (c === '\r' && text[i+1] === '\n') i++; row.push(f); rows.push(row); row = []; f = ''; i++; continue; }
+    f += c; i++;
+  }
+  if (q) throw new Error('引用符（"）が閉じられていない行があります。');
+  if (f !== '' || row.length) { row.push(f); rows.push(row); }
+  return rows;
+}
+
+/* ---- 列名の吸収 ---- */
+const normHeader = h => nfkc(h).replace(/[\s　]/g, '').toLowerCase();
+const ALIAS = {
+  date:   ['利用日','ご利用日','取引日','日付','年月日','取引年月日'],
+  desc:   ['利用店名','ご利用店名','利用先','ご利用先','店名','摘要','内容','取引内容'],
+  amount: ['利用金額','ご利用金額','金額','支払金額','請求金額'],
+  out:    ['出金額','出金','お支払金額','お引出し','引出額'],
+  inn:    ['入金額','入金','お預入れ','お預入額','預入額'],
+  inst:   ['支払回数','回数','支払区分'],
+  note:   ['備考','メモ','摘要2'],
+  bal:    ['残高','差引残高']
+};
+function detectColumns(headerRow){
+  const hs = headerRow.map(normHeader); const idx = {};
+  for (const k of Object.keys(ALIAS)) {
+    const al = ALIAS[k].map(normHeader);
+    const p = hs.findIndex(h => al.includes(h));
+    idx[k] = p;
+  }
+  let format = null;
+  if (idx.out >= 0 && idx.inn >= 0) format = 'B';
+  else if (idx.amount >= 0) format = 'A';
+  if (!format || idx.date < 0 || idx.desc < 0) {
+    throw new Error('明細A（利用日／利用店名／利用金額…）または明細B（取引日／摘要／出金額／入金額…）の列を判別できません。検出した列名：' + (headerRow.map(h => '「' + h + '」').join('') || '（なし）'));
+  }
+  return { format, idx };
+}
+
+/* ---- 日付・金額 ---- */
+function parseDate(raw){
+  const s = nfkc(raw).trim(); let m = s.match(/^(\d{4})[\/\-.年](\d{1,2})[\/\-.月](\d{1,2})日?$/);
+  if (!m) { m = s.match(/^(\d{2})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/); if (m) m[1] = String(2000 + Number(m[1])); }
+  if (!m) return null;
+  const y = +m[1], mo = +m[2], d = +m[3]; const dt = new Date(Date.UTC(y, mo-1, d));
+  if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== mo-1 || dt.getUTCDate() !== d) return null;
+  return y + '-' + pad2(mo) + '-' + pad2(d);
+}
+function parseAmount(raw){
+  let s = nfkc(raw).trim(); if (s === '') return { empty:true };
+  s = s.replace(/[¥円,\s]/g, ''); let neg = false;
+  if (/^\(.*\)$/.test(s)) { neg = true; s = s.slice(1, -1); }
+  if (/^[-−‐‑–—▲△]/.test(s)) { neg = true; s = s.slice(1); }
+  if (!/^\d+$/.test(s)) return { bad:true };
+  return { value:parseInt(s, 10), neg };
+}
+function parseInstallments(raw){
+  const s = nfkc(raw).trim(); if (s === '') return null;
+  if (/^(一括|1回払い?)$/.test(s)) return 1;
+  const m = s.match(/^(\d+)回?$/); return m ? parseInt(m[1], 10) : null;
+}
+const normDesc = s => nfkc(s).toLowerCase().replace(/[\s　]/g, '');
+const REFUND_RE = /返金|ヘンキン|取消|キャンセル/;
+
+/* ---- 明細の読み込み（元データを全件保持） ---- */
+function parseStatement(text, fileName){
+  const rows = parseCsv(text);
+  if (!rows.length) throw new Error('ファイルが空です。');
+  const { format, idx } = detectColumns(rows[0]);
+  const records = []; let blank = 0; const cell = (r, k) => (idx[k] >= 0 && idx[k] < r.length ? r[idx[k]] : '');
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    if (r.every(c => String(c).trim() === '')) { blank++; continue; }
+    const rec = { id: records.length + 1, source: format, rowNo: i + 1, raw: r.slice(), warnings: [],
+      dateRaw: cell(r,'date'), desc: cell(r,'desc'), noteRaw: cell(r,'note'),
+      date: null, descNorm: normDesc(cell(r,'desc')), amountSigned: null, direction: 'unknown', kind: 'unknown',
+      installments: null, dup: 0, toolCategory: null, reason: '', finalCategory: null, reclassFrom: null, refund: null };
+    if (r.length !== rows[0].length) rec.warnings.push('列数がヘッダーと異なります（' + r.length + '列）。読み取れた範囲で保持しました。');
+    rec.date = parseDate(rec.dateRaw);
+    if (!rec.date) rec.warnings.push('日付を読み取れません（原文のまま保持）。');
+    if (format === 'A') {
+      const a = parseAmount(cell(r,'amount'));
+      if (a.empty || a.bad) rec.warnings.push('金額を読み取れません。');
+      else { rec.amountSigned = a.neg ? -a.value : a.value; rec.direction = rec.amountSigned < 0 ? 'in' : 'out'; }
+      rec.installments = parseInstallments(cell(r,'inst'));
+      if (rec.installments == null) rec.warnings.push('支払回数を読み取れません。');
+      rec.kind = rec.direction === 'in' ? 'refund' : (rec.direction === 'out' ? 'purchase' : 'unknown');
+    } else {
+      const o = parseAmount(cell(r,'out')), n = parseAmount(cell(r,'inn'));
+      const oOk = !o.empty && !o.bad && !o.neg, nOk = !n.empty && !n.bad && !n.neg;
+      if ((o.bad || n.bad) || (o.neg || n.neg)) rec.warnings.push('出金額または入金額を読み取れません。');
+      else if (oOk && nOk) rec.warnings.push('出金額と入金額の両方に値があり、取引方向を決められません。');
+      else if (!oOk && !nOk) rec.warnings.push('出金額・入金額のどちらにも値がありません。');
+      else if (oOk) { rec.amountSigned = o.value; rec.direction = 'out'; rec.kind = 'purchase'; }
+      else { rec.amountSigned = -n.value; rec.direction = 'in';
+        rec.kind = REFUND_RE.test(rec.descNorm) ? 'refund' : (/利息|リソク/.test(rec.descNorm) ? 'interest' : 'income'); }
+    }
+    records.push(rec);
+  }
+  markDuplicates(records);
+  return { format, records, stats: { fileName, totalRows: rows.length - 1, read: records.length, blank } };
+}
+function markDuplicates(records){
+  const m = new Map();
+  records.forEach(r => { const k = (r.date || nfkc(r.dateRaw)) + '|' + r.descNorm + '|' + r.amountSigned; (m.get(k) || m.set(k, []).get(k)).push(r); });
+  records.forEach(r => r.dup = 0);
+  m.forEach(g => { if (g.length > 1) g.forEach(r => r.dup = g.length - 1); });
+}
+
+/* ---- 仕分けルール（辞書）---- */
+// re: 正規化後の摘要（NFKC・小文字・空白除去）に対する正規表現。一致した文字列がそのまま理由に表示される
+// ascii: 英数字の語。前後が英数字でない場合だけ一致（MAIL の中の ai などに誤反応しない）
+// not: 除外パターン（部分一致の誤判定を防ぐ）
+// pw: プロフィール側の語・同義語（表示用の表記。照合時は正規化する）
+// biz: 摘要に事業との関連を示す語 / both: 仕事と私用の両方があり得る語 / priv: 私生活寄りの語
+const RULES_BIZ = [
+  { label:'クラウドサーバー', re:/サーバー/, ascii:['vps'], not:/ウォーターサーバー|ゲームサーバー|ビールサーバー/,
+    pw:['クラウドサーバー','クラウド','レンタルサーバー','サーバー','VPS','ホスティング'] },
+  { label:'コワーキング',     re:/コワーキング|シェアオフィス|レンタルオフィス/, pw:['コワーキング','シェアオフィス','レンタルオフィス'] },
+  { label:'文章校正ツール',   re:/校正|校閲|ヨミナオシ/, pw:['文章校正','校正','校閲'] },
+  { label:'画像素材',         re:/画像素材|イメージソザイ|ピクセルバンク|ストックフォト|フリー素材/, pw:['画像素材','写真素材','フリー素材','ストックフォト'] },
+  { label:'ドメイン管理',     re:/ドメイン/, pw:['独自ドメイン','ドメイン'] },
+  { label:'取材用の機材',     re:/icレコーダー|ボイスレコーダー|取材/, pw:['取材','インタビュー','ICレコーダー','ボイスレコーダー'] }
+];
+const RULES_BOTH = [
+  { label:'AIサービス',       re:/エーアイ|chatgpt|チャットジーピーティー/, ascii:['ai'], pw:['AIアシスト','生成AI','AIツール','ChatGPT','AI'] },
+  { label:'書籍・書店',       re:/書籍|書店|ブックストア|雑誌|ギジュツショ|技術書/, pw:['技術書','電子書籍','参考資料','書籍'] },
+  { label:'通信・携帯関連',   re:/通信|回線|カイセン|携帯|ケーブル|デンワ|ツウワ|ひかりモバイル/, pw:['自宅','在宅'] },
+  { label:'交通系ICチャージ', re:/交通系ic|icチャージ|suica|パスモ/, pw:['電車','取材'] },
+  { label:'家賃・光熱費',     re:/ヤチン|家賃|デンキダイ|電気代|水道|スイドウ/, pw:['自宅','在宅'] },
+  { label:'飲食（カフェ・ランチ）', re:/カフェ|コーヒー|ランチ|定食/, pw:['取材'] },
+  { label:'端末・PC類',       re:/タブレット|パソコン|端末/, pw:['テスト用の端末','端末','タブレット','ノートPC'] },
+  { label:'日用品・通販',     re:/ホームセンター|ネット通販|日用品|雑貨/, pw:[] },
+  { label:'文房具',           re:/ブンボウグ|文房具/, pw:[] },
+  { label:'郵便・発送',       re:/ユウビン|郵便|キッテ|切手/, pw:[] },
+  { label:'ガソリン',         re:/ガソリン/, pw:[] },
+  { label:'現金の引き出し',   re:/ヒキダシ|引出|引き出し/, ascii:['atm'], pw:[] }
+];
+const RULES_PRIV = [
+  { label:'食料品・スーパー', re:/スーパー|ベーカリー|食卓/, pw:['食材','食品','料理','レシピ','グルメ'] },
+  { label:'飲酒を伴う飲食',   re:/居酒屋|イザカヤ/, pw:['接待','居酒屋'] },
+  { label:'娯楽',             re:/シネマ|映画|マンガキッサ|漫画|おもちゃ|オモチャ|トイズ/, pw:['映画','漫画','マンガ','ゲーム','玩具','おもちゃ'] },
+  { label:'美容・衛生用品',   re:/美容室|ビヨウシツ|理容|クリーニング|クリーニンク|ドラッグ/, pw:['美容','理容','ヘアメイク','クリーニング','衣装'] },
+  { label:'医療・ペット',     re:/病院|クリニック|イリョウヒ|ペット|ポチたま|ポチタマ/, not:/ペットボトル/, pw:['ペット','動物','獣医','医療','介護','ヘルスケア'] },
+  { label:'フィットネス',     re:/フィットネス|ジム/, not:/ジムニー|ジムビーム/, pw:['フィットネス','トレーナー','ジム','スポーツ'] },
+  { label:'保険',             re:/保険|ホケン|損保/, pw:['保険','営業車','運送','配送','車両'] },
+  { label:'ベビー用品',       re:/ベビー/, pw:['育児','ベビー','子育て','キッズ'] }
+];
+const RULES_INCOME = [
+  { label:'報酬', re:/報酬|ホウシュウ|原稿料|ゲンコウリョウ/, pw:['報酬','原稿料','稿料','ギャラ','謝礼'] },
+  { label:'売上', re:/売上|ウリアゲ/, pw:['売上','収益','課金収入','広告収入'] }
+];
+
+/* ---- 照合の部品 ---- */
+function boundaryFind(str, w){
+  if (!w) return -1; const isA = c => /[a-z0-9]/.test(c); let i = str.indexOf(w);
+  while (i >= 0) {
+    const a = str[i-1], b = str[i + w.length];
+    const badL = isA(w[0]) && a && isA(a), badR = isA(w[w.length-1]) && b && isA(b);
+    if (!badL && !badR) return i;
+    i = str.indexOf(w, i + 1);
+  }
+  return -1;
+}
+function descForms(raw){ return { s: nfkc(raw).toLowerCase().replace(/\s+/g, ' ').trim(), ns: normDesc(raw), orig: nfkc(raw) }; }
+// 英数字の語は、摘要に実際にある大文字小文字のまま取り出す（見つからなければ正規化後の語）
+function recoverAscii(orig, w){ const m = new RegExp('(^|[^A-Za-z0-9])(' + w + ')(?![A-Za-z0-9])', 'i').exec(orig); return m ? m[2] : w; }
+function ruleMatch(rule, d){
+  if (rule.not && rule.not.test(d.ns)) return null;
+  if (rule.re) { const m = rule.re.exec(d.ns); if (m) return m[0]; }
+  for (const w of (rule.ascii || [])) { if (boundaryFind(d.s, w) >= 0 || boundaryFind(d.ns, w) >= 0) return recoverAscii(d.orig || '', w); }
+  return null;
+}
+
+/* ---- プロフィールの照合（否定・対比の判定を含む）---- */
+// 明確な否定表現だけを除外の対象とする。単なる「ない」「以前」では除外しない
+const NEG_RE = /使わ(ない|ず)|使いません|使っていな|使っておらず|使用しな|使用していな|利用しな|利用していな|契約しな|契約していな|購入しな|購入していな|持っていな|持たない|受け取らな|受け取っていな|行わな|行っていな|運営しな|運営していな|必要ない|必要としな|不要|ません|ていない|ておらず|しない|なし$/;
+const DOUBLE_NEG_RE = /わけではない|ことはない|なくはない|ないではない|ないでもない|なくもない|ないとは(限|言)/;
+const CONTRAST_RE = /ないが|ませんが|けれど|けど|ものの|一方|ただし|しかし|以前|かつて|昔|今は|いまは|現在は|最近は|今後|将来|予定|検討|やめ/;
+const RELATION_RE = /副業|仕事|業務|事業|制作|販売|取材|撮影|作業|のため|として|に使う|を使う|で使う|使用|利用|扱う|取り扱|運営|活動|紹介|レビュー|執筆/;
+function analyzeProfile(profile){
+  const sentences = [];
+  ['content','tools','place','other'].forEach(f => String(profile[f] || '').split(/[。！？!?\n\r]+/).forEach(t => {
+    if (t.trim() === '') return;
+    const ns = normDesc(t);
+    sentences.push({ field: f, s: nfkc(t).toLowerCase().replace(/\s+/g, ' ').trim(), ns, segs: ns.split(/[、,，]/) });
+  }));
+  return { sentences };
+}
+// 'match'（肯定）／'negated'（明確な否定）／'ambiguous'（二重否定・対比・本業との対比など、自動判定しない）
+function judgeSentence(st, wl){
+  const t = st.ns;
+  if (/本業/.test(t) || DOUBLE_NEG_RE.test(t)) return 'ambiguous';
+  const negIn = st.segs.map(g => NEG_RE.test(g));
+  if (!negIn.some(Boolean)) return 'match';
+  if (CONTRAST_RE.test(t)) return 'ambiguous';
+  const k = st.segs.findIndex(g => boundaryFind(g, wl) >= 0);
+  if (k < 0) return 'ambiguous';
+  if (negIn[k]) return 'negated';
+  return negIn.slice(k + 1).some(Boolean) ? 'ambiguous' : 'match';
+}
+function lookup(PA, aliases){
+  const r = { matches: [], negated: [], ambiguous: [] };
+  for (const st of PA.sentences) for (const w of aliases) {
+    const wl = normDesc(w); if (boundaryFind(st.s, wl) < 0 && boundaryFind(st.ns, wl) < 0) continue;
+    const k = judgeSentence(st, wl); r[k === 'match' ? 'matches' : k].push({ word: w, st }); break;
+  }
+  return r;
+}
+function sumBiz(l){
+  if (l.ambiguous.length || (l.matches.length && l.negated.length)) return { status:'ambiguous', word:(l.ambiguous[0] || l.matches[0]).word };
+  if (l.matches.length) return { status:'match', word:l.matches[0].word };
+  if (l.negated.length) return { status:'negated', word:l.negated[0].word };
+  return { status:'none' };
+}
+// 私用語：登場するだけでは要判断にしない。副業との関連を示す肯定的な記述（副業の内容・使うものの欄、または関連表現を含む文）がある場合のみ
+const isPositive = it => it.st.field === 'content' || it.st.field === 'tools' || RELATION_RE.test(it.st.ns);
+function sumPriv(l){
+  const pos = l.matches.filter(isPositive);
+  if (l.ambiguous.length || (pos.length && l.negated.length)) return { status:'ambiguous', word:(l.ambiguous[0] || pos[0]).word };
+  if (pos.length) return { status:'positive', word:pos[0].word };
+  if (l.negated.length) return { status:'negated', word:l.negated[0].word };
+  if (l.matches.length) return { status:'mention', word:l.matches[0].word };
+  return { status:'none' };
+}
+function collectHits(list, d, PA, sum){
+  const out = [];
+  for (const r of list) { const m = ruleMatch(r, d); if (!m) continue;
+    out.push({ label: r.label, m, pw: r.pw || [], prof: (r.pw && r.pw.length) ? sum(lookup(PA, r.pw)) : { status:'none' } }); }
+  return out;
+}
+
+function findOriginal(r, all){
+  const base = r.descNorm.replace(new RegExp(REFUND_RE.source, 'g'), '');
+  if (!base) return null; const amt = Math.abs(r.amountSigned); let best = null;
+  for (const c of all) {
+    if (c === r || c.direction !== 'out' || c.amountSigned !== amt) continue;
+    if (!(c.descNorm === base || c.descNorm.includes(base) || base.includes(c.descNorm))) continue;
+    if (r.date && c.date && c.date > r.date) continue;
+    if (!best || (c.date || '') > (best.date || '')) best = c;
+  }
+  return best;
+}
+const dispDate = r => r.dateRaw;
+
+/* ---- 仕分け本体（理由には、実際に一致した語と照合結果だけを書く）---- */
+const q = s => '「' + s + '」';
+const normNote = (raw, hits) => hits.some(h => !raw.includes(h.m)) ? '（一致語は半角・全角や大文字小文字を統一した表記で示しています）' : '';
+const hitTxt = h => q(h.m) + '（' + h.label + '）';
+const listWords = pw => pw.slice(0, 4).map(q).join('') + (pw.length > 4 ? 'など' : '');
+function profNoteBoth(h){
+  switch (h.prof.status) {
+    case 'match': return 'プロフィールの' + q(h.prof.word) + 'とも関係し得ますが、';
+    case 'negated': return 'プロフィールには' + q(h.prof.word) + 'を仕事で使わない旨の記述があります。';
+    case 'ambiguous': return 'プロフィールの' + q(h.prof.word) + 'を含む記述は否定や対比を含み、機械的に判断できませんでした。';
+    default: return '';
+  }
+}
+function profNoteBiz(h){
+  switch (h.prof.status) {
+    case 'negated': return 'プロフィールの' + q(h.prof.word) + 'は使わない旨の記述があるため、関連するものとして扱っていません。';
+    case 'ambiguous': return 'プロフィールの' + q(h.prof.word) + 'を含む記述は否定や対比を含み、機械的に判断できませんでした。';
+    default: return 'プロフィールに、対応する記載（' + listWords(h.pw) + '）は見つかりませんでした。';
+  }
+}
+function profSum(h){
+  switch (h.prof.status) {
+    case 'negated': return 'プロフィールに使わない旨の記述';
+    case 'ambiguous': return 'プロフィールの記述が判断できない';
+    default: return 'プロフィールに対応する記載なし';
+  }
+}
+function classifyOne(r, PA, all){
+  const d = descForms(r.desc), raw = r.desc.trim(); let cat, why, sum;
+  if (r.direction === 'in') {
+    if (r.kind === 'refund') {
+      cat = CAT.CHK; r.refund = findOriginal(r, all);
+      const basis = REFUND_RE.exec(r.descNorm);
+      why = '返金（入金）の明細です（' + (basis ? '摘要に' + q(basis[0]) + 'を含むため' : '金額がマイナスのため') + '）。' + (r.refund
+        ? '元の明細（' + dispDate(r.refund) + q(r.refund.desc.trim()) + fmtYen(r.refund.amountSigned) + '円・元データ' + r.refund.rowNo + '行目）に対応するとみられます。元の明細が事業か私用かを確認し、同じ区分で確定してください。'
+        : '対応する元の明細を特定できませんでした。内容を確認して区分を選んでください。');
+      sum = r.refund ? '返金とみられる明細（元：' + dispDate(r.refund) + '）' : '返金とみられる明細（元の明細を特定できず）';
+    } else if (r.kind === 'interest') {
+      const m = /利息|リソク/.exec(r.descNorm);
+      cat = CAT.PRIV; why = '入金の摘要' + q(raw) + 'に' + q(m ? m[0] : '利息') + 'を含み、預金の利息とみられます。副業の取引とは別のものである可能性があります。' + normNote(raw, [{ m: m ? m[0] : '' }]); sum = '預金の利息とみられる少額の入金';
+    } else {
+      const hs = collectHits(RULES_INCOME, d, PA, sumBiz); const hit = hs.find(h => h.prof.status === 'match');
+      if (hit) { cat = CAT.BIZ; why = '入金の摘要' + q(raw) + 'に' + hitTxt(hit) + 'を含み、プロフィールの' + q(hit.prof.word) + 'の記載と一致しています。副業の収入に関係する可能性があります。' + normNote(raw, [hit]); sum = q(hit.m) + 'を含み、プロフィールの' + q(hit.prof.word) + 'と一致'; }
+      else if (hs.length) { cat = CAT.CHK; why = '入金の摘要' + q(raw) + 'に' + hitTxt(hs[0]) + 'を含みますが、' + profNoteBiz(hs[0]) + '判断が必要です。' + normNote(raw, hs); sum = q(hs[0].m) + 'を含むが、' + profSum(hs[0]); }
+      else { cat = CAT.CHK; why = '入金の摘要' + q(raw) + 'には、内容を示す語として登録している語（報酬・売上・利息・返金など）が含まれていませんでした。判断が必要です。'; sum = '内容を示す語が見つからない入金'; }
+    }
+  } else {
+    const biz = collectHits(RULES_BIZ, d, PA, sumBiz), both = collectHits(RULES_BOTH, d, PA, sumBiz), priv = collectHits(RULES_PRIV, d, PA, sumPriv);
+    const bizMatched = biz.filter(x => x.prof.status === 'match');
+    const bizScore = biz.reduce((s, x) => s + TH.W_BIZ + (x.prof.status === 'match' ? TH.W_PROFILE : 0), 0);
+    const privScore = priv.length ? TH.W_PRIV : 0;
+    const forced = [], forcedS = [];
+    if (r.amountSigned == null || r.direction === 'unknown') { forced.push('金額または取引方向を読み取れないため、判断が必要です。'); forcedS.push('金額・方向を読み取れない'); }
+    if (r.source === 'A') {
+      if (r.installments == null) { forced.push('支払回数が読み取れないため、判断が必要です。'); forcedS.push('支払回数を読み取れない'); }
+      else if (r.installments >= 2) { forced.push('支払回数が' + r.installments + '回の分割払いのため、判断が必要です。'); forcedS.push(r.installments + '回の分割払い'); }
+    }
+    const bizAmb = biz.find(x => x.prof.status === 'ambiguous');
+    if (forced.length) { cat = CAT.CHK; why = forced.join(''); sum = forcedS.join('／'); }
+    else if (both.length) {
+      cat = CAT.CHK;
+      why = both.map((h, i) => (i === 0 ? '摘要' + q(raw) + 'に' + hitTxt(h) + 'を含み、' : hitTxt(h) + 'も含み、') + '仕分けでは仕事と私用の両方で使う可能性があるものとして扱います。' + profNoteBoth(h)).join('')
+        + '用途は本人の判断が必要です。' + normNote(raw, both);
+      sum = q(both[0].m) + '（' + both[0].label + '）：仕事と私用の両方の可能性' + (both.length > 1 ? '（他' + (both.length - 1) + '語）' : '');
+    } else if (bizAmb) {
+      cat = CAT.CHK; why = '摘要' + q(raw) + 'に' + hitTxt(bizAmb) + 'を含みますが、' + profNoteBiz(bizAmb) + '判断が必要です。' + normNote(raw, biz);
+      sum = q(bizAmb.m) + 'を含むが、プロフィールの記述が否定・対比で判断できない';
+    } else if (bizScore >= TH.BIZ_MIN && privScore < TH.BIZ_PRIV_MAX && bizMatched.length) {
+      cat = CAT.BIZ; const h = bizMatched[0];
+      why = '摘要' + q(raw) + 'に' + bizMatched.map(hitTxt).join('') + 'を含み、プロフィールの' + bizMatched.map(x => q(x.prof.word)).join('') + 'と一致しています。事業に関係する可能性があります。' + normNote(raw, bizMatched);
+      sum = bizMatched.map(x => q(x.m)).join('') + 'を含み、プロフィールの' + bizMatched.map(x => q(x.prof.word)).join('') + 'と一致';
+    } else if (privScore >= TH.PRIV_MIN && bizScore < TH.PRIV_BIZ_MAX) {
+      const amb = priv.find(x => x.prof.status === 'ambiguous'), pos = priv.find(x => x.prof.status === 'positive');
+      if (amb) { cat = CAT.CHK; why = '摘要' + q(raw) + 'に' + hitTxt(amb) + 'を含みますが、プロフィールの' + q(amb.prof.word) + 'を含む記述は否定や対比を含み、機械的に判断できませんでした。判断が必要です。'; sum = q(amb.m) + 'を含むが、プロフィールの記述が否定・対比で判断できない'; }
+      else if (pos) { cat = CAT.CHK; why = '摘要' + q(raw) + 'に' + hitTxt(pos) + 'を含みます。プロフィールに' + q(pos.prof.word) + 'を副業に関連して記載した箇所があるため、私用と事業の両方の可能性があります。判断が必要です。'; sum = q(pos.m) + 'を含むが、プロフィールに副業と関連する記載あり'; }
+      else {
+        cat = CAT.PRIV;
+        why = '摘要' + q(raw) + 'に' + priv.map(hitTxt).join('') + 'を含みます。' + priv.map(h => h.prof.status === 'negated'
+          ? 'プロフィールには' + q(h.prof.word) + 'を仕事で使わない旨の記述があります。'
+          : h.prof.status === 'mention'
+            ? 'プロフィールに' + q(h.prof.word) + 'の記載はありますが、副業との関連を示す記述とは判断していません。'
+            : 'プロフィールを照合しましたが、' + h.label + 'に関連する記載（' + listWords(h.pw) + '）は見つかりませんでした。').join('') + '参考の判定で、最終区分は本人が確定します。' + normNote(raw, priv);
+        sum = priv.map(x => q(x.m)).join('') + 'を含み、' + (priv[0].prof.status === 'negated' ? 'プロフィールで仕事では使わない旨の記述' : priv[0].prof.status === 'mention' ? 'プロフィールの記載は副業との関連を示さない' : 'プロフィールに関連する記載なし');
+      }
+    } else if (biz.length && priv.length) {
+      cat = CAT.CHK; why = '摘要' + q(raw) + 'に事業側の語' + biz.map(hitTxt).join('') + 'と私用側の語' + priv.map(hitTxt).join('') + 'の両方を含むため、判断が必要です。'; sum = '事業側の語と私用側の語の両方を含む';
+    } else if (biz.length) {
+      cat = CAT.CHK; why = '摘要' + q(raw) + 'に' + biz.map(hitTxt).join('') + 'を含み、事業に関係する可能性がありますが、' + profNoteBiz(biz[0]) + '判断が必要です。' + normNote(raw, biz);
+      sum = q(biz[0].m) + 'を含むが、' + profSum(biz[0]);
+    } else {
+      cat = CAT.CHK; why = '摘要' + q(raw) + 'には、事業・私用のどちらかを示す語として登録している語が含まれていませんでした。判断が必要です。'; sum = '事業・私用を示す語が見つからない';
+    }
+  }
+  if (r.dup) why += ' 同じ日付・摘要・金額の明細が他に' + r.dup + '件あります（重複の可能性。明細はすべて残しています）。';
+  if (r.warnings.length) why += ' 【読み取り時の注意】' + r.warnings.join('');
+  if (r.dup) sum += '／重複の可能性';
+  if (r.warnings.length) sum += '／読み取り注意あり';
+  r.toolCategory = cat; r.reason = why; r.summary = sum;
+}
+// プロフィールが変わっても finalCategory は触らない（再仕分けはツール仕分けと理由のみ）
+function classifyAll(records, profile){
+  const PA = analyzeProfile(profile); let changed = 0;
+  records.forEach(r => { const prev = r.toolCategory; r.reclassFrom = null; classifyOne(r, PA, records);
+    if (prev && prev !== r.toolCategory) { r.reclassFrom = prev; changed++; } });
+  return changed;
+}
+function finalDiff(r){
+  return !!r.finalCategory && ((r.finalCategory === '事業' && r.toolCategory === CAT.PRIV) || (r.finalCategory === '私用' && r.toolCategory === CAT.BIZ));
+}
+
+/* ---- CSV 出力（インジェクション対策は出力文字列の生成時のみ）---- */
+function csvField(v){ const s = String(v == null ? '' : v); return /[",\r\n]/.test(s) || /^\s|\s$/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+function guardField(v, altered, info){
+  const s = String(v == null ? '' : v);
+  if (/^[=+\-@\t\r]/.test(s)) { altered.push({ rowNo: info.rowNo, col: info.col, orig: s, out: "'" + s }); return "'" + s; }
+  return s;
+}
+function buildCsv(records){
+  const altered = []; const lines = [OUT_HEADERS.map(csvField).join(',')];
+  records.forEach(r => {
+    lines.push([
+      csvField(guardField(r.dateRaw, altered, { rowNo:r.rowNo, col:'日付' })),
+      csvField(guardField(r.desc, altered, { rowNo:r.rowNo, col:'摘要' })),
+      r.amountSigned == null ? '' : String(r.amountSigned),
+      r.toolCategory, r.finalCategory || '',
+      csvField(guardField(r.reason, altered, { rowNo:r.rowNo, col:'理由' }))
+    ].join(','));
+  });
+  return { text: lines.join('\r\n') + '\r\n', altered };
+}
+function verifyOutput(text, records){
+  const rows = parseCsv(text.replace(/^﻿/, ''));
+  const head = rows[0] || []; const data = rows.slice(1);
+  const headOk = head.length === OUT_HEADERS.length && head.every((h, i) => h === OUT_HEADERS[i]);
+  const outSum = data.reduce((s, r) => s + (r[2] === '' ? 0 : Number(r[2])), 0);
+  const inSum = records.reduce((s, r) => s + (r.amountSigned == null ? 0 : r.amountSigned), 0);
+  return { headOk, outCount: data.length, outSum, inSum, colsOk: data.every(r => r.length === 6) };
+}
+// ==CORE-END==
+/* =====================================================================
+   画面（DOM）
+   ===================================================================== */
+const S = {
+  step: 1,
+  profile: { content:'', tools:'', place:'', other:'' },
+  profileChanged: false,
+  records: [], format: null, stats: null, loadError: '', reclass: null,
+  filter: 'all',      // 画面④の絞り込み
+  resFilter: 'all',   // 画面③の絞り込み（表示だけを変える）
+  openAll: false,     // 画面③ 詳細の一括開閉
+  edit: new Set(),    // 画面④ 再編集中の確定済みカード
+  lastId: 0           // 画面④ 最後に操作したカード
+};
+const app = document.getElementById('app');
+const STEPS = ['プロフィール入力','CSV読み込み','仕分け結果','明細の確認','最終確認・CSV出力'];
+
+function h(tag, props, ...kids){
+  const e = document.createElement(tag);
+  for (const k in (props || {})) { const v = props[k]; if (v == null || v === false) continue;
+    if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v); }
+  for (const c of kids.flat(Infinity)) { if (c == null || c === false) continue; e.append(c.nodeType ? c : document.createTextNode(String(c))); }
+  return e;
+}
+function live(msg){ const e = document.getElementById('live'); e.textContent = ''; setTimeout(() => { e.textContent = msg; }, 30); }
+const hasProfile = () => S.profile.content.trim() !== '';
+const hasData = () => S.records.length > 0 || Object.values(S.profile).some(v => v.trim() !== '');
+const unconfirmed = () => S.records.filter(r => !r.finalCategory).length;
+const catClass = c => c === CAT.BIZ ? 'biz' : c === CAT.PRIV ? 'priv' : 'chk';
+const badge = c => h('span', { class: 'badge ' + catClass(c) }, c);
+const finBadge = r => r.finalCategory ? h('span', { class: 'badge fin' }, '確定：' + r.finalCategory) : h('span', { class: 'badge none' }, '未確認');
+const kindTag = r => r.kind === 'refund' ? h('span', { class: 'tag' }, '返金') : (r.direction === 'in' ? h('span', { class: 'tag' }, '入金') : null);
+const amountText = r => r.amountSigned == null ? '—' : fmtYen(r.amountSigned) + '円';
+
+function reachable(n){ if (n === 1) return true; if (n === 2) return hasProfile(); return hasProfile() && S.records.length > 0; }
+function go(n){
+  if (!reachable(n)) return;
+  if (n >= 3 && S.profileChanged && S.records.length) {
+    const c = classifyAll(S.records, S.profile); S.profileChanged = false;
+    S.reclass = { changed: c, diffs: S.records.filter(finalDiff).length };
+  }
+  S.step = n; render(); window.scrollTo(0, 0);
+  const hd = app.querySelector('h2'); if (hd) { hd.setAttribute('tabindex', '-1'); hd.focus({ preventScroll: true }); }
+}
+function stepper(){
+  return h('nav', { class: 'stp', 'aria-label': '操作の進行状況' },
+    h('ol', { class: 'steps' }, STEPS.map((t, i) => {
+      const n = i + 1; const cls = n === S.step ? 'cur' : (n < S.step ? 'done' : ''); const dis = !reachable(n);
+      return h('li', { class: cls }, h('button', { type: 'button', 'aria-current': n === S.step ? 'step' : null, 'aria-label': n + '. ' + t + (dis ? '（前の入力が済むと進めます）' : ''), disabled: dis, onclick: () => go(n) },
+        h('span', { class: 'n', 'aria-hidden': 'true' }, n), h('span', { class: 'lbl' }, t)));
+    })),
+    h('p', { class: 'step-cur', 'aria-hidden': 'true' }, 'STEP ' + S.step + '/5　' + STEPS[S.step - 1]));
+}
+
+/* ---- 画面1 ---- */
+function screenProfile(){
+  const fields = [['content','副業の内容', true, '例：Webメディア向けの記事ライティング（平日の夜と週末）'],
+    ['tools','使うもの', false, '例：ノートPC、文章校正ツール、AIアシスト など'],
+    ['place','作業場所', false, '例：自宅、コワーキングスペース（月会費で利用）'],
+    ['other','その他', false, '例：取材の移動、ポートフォリオサイト（ドメイン）、報酬の受け取り方法 など']];
+  const next = h('button', { type: 'button', class: 'btn', onclick: () => go(2) }, 'CSV読み込みへ進む');
+  const upd = () => { next.disabled = !hasProfile(); };
+  const box = h('div', { class: 'card' },
+    h('h2', null, '① 副業プロフィール入力'),
+    h('p', { class: 'note' }, '仕分けの手がかりとして使います。入力内容はこのブラウザの中だけで使われ、外部へは送信されません。'),
+    fields.map(([k, label, req, ph]) => {
+      const ta = h('textarea', { id: 'f_' + k, placeholder: ph, autocomplete: 'off' }); ta.value = S.profile[k];
+      ta.addEventListener('input', () => { S.profile[k] = ta.value; if (S.records.length) S.profileChanged = true; upd(); });
+      return [h('label', { for: 'f_' + k }, label, req ? h('span', { class: 'req' }, '必須') : null), ta];
+    }),
+    S.records.length ? h('div', { class: 'msg info' }, 'プロフィールを変更した場合は、次の画面へ進む際に再仕分けします（ツール仕分けと理由のみ更新。確定済みの最終区分は維持されます）。') : null,
+    h('div', { class: 'row' }, next));
+  upd(); return box;
+}
+
+/* ---- 画面2 ---- */
+function loadText(text, fileName){
+  try {
+    const res = parseStatement(text, fileName);       // 解析に成功してから置換する
+    S.format = res.format; S.records = res.records; S.stats = res.stats; S.loadError = ''; S.reclass = null;
+    S.edit = new Set(); S.lastId = 0; S.filter = 'all'; S.resFilter = 'all';
+    classifyAll(S.records, S.profile); S.profileChanged = false;
+  } catch (e) { S.loadError = e.message; }               // 失敗時は既存データを維持
+  render();
+  const ok = app.querySelector('.msg.ok'); if (ok) ok.focus({ preventScroll: true });
+}
+function dupGroups(){
+  const m = new Map();
+  S.records.forEach(r => { if (!r.dup) return; const k = (r.date || nfkc(r.dateRaw)) + '|' + r.descNorm + '|' + r.amountSigned; (m.get(k) || m.set(k, []).get(k)).push(r); });
+  return [...m.values()];
+}
+function foldList(items, label){
+  if (!items.length) return null;
+  const ul = h('ul', { class: 'sm' }, items.map(t => h('li', null, t)));
+  return items.length > 5 ? h('details', { class: 'fold' }, h('summary', null, label + '（' + items.length + '件）を表示'), ul) : ul;
+}
+function screenLoad(){
+  const input = h('input', { type: 'file', accept: '.csv,text/csv', id: 'csvfile', hidden: true, 'aria-label': 'CSVファイル' });
+  input.addEventListener('change', async () => {
+    const f = input.files && input.files[0]; if (!f) return;
+    try { loadText(decodeBytes(await f.arrayBuffer()), f.name); }
+    catch (e) { S.loadError = e.message; render(); }
+    input.value = '';
+  });
+  const pick = h('button', { type: 'button', class: 'btn', id: 'pickBtn', onclick: () => {
+    if (S.records.length && !window.confirm('別のCSVを読み込むと、読み込み済みの明細と確定内容がすべて失われます（プロフィールは維持されます）。\n置換してよろしいですか？')) return;
+    input.click();
+  } }, S.records.length ? '別のCSVに置き換える' : 'CSVファイルを選択');
+  const st = S.stats;
+  let report = null;
+  if (st) {
+    const groups = dupGroups(), warned = S.records.filter(r => r.warnings.length);
+    report = h('div', null,
+      h('div', { class: 'msg ok', role: 'status', tabindex: '-1' }, '「' + st.fileName + '」を読み込みました（' + (S.format === 'A' ? '明細A：カード形式' : '明細B：銀行形式') + '）。'),
+      h('div', { class: 'cards' },
+        h('div', { class: 'stat un' }, h('b', null, st.read), h('span', null, '読込件数')),
+        h('div', { class: 'stat ' + (warned.length ? 'chk' : 'biz') }, h('b', null, warned.length), h('span', null, '読み取り注意のある明細')),
+        h('div', { class: 'stat ' + (groups.length ? 'chk' : 'biz') }, h('b', null, S.records.filter(r => r.dup).length), h('span', null, '重複の可能性（削除せず保持）')),
+        h('div', { class: 'stat priv' }, h('b', null, st.blank), h('span', null, '除外した空行'))),
+      groups.length ? h('div', null, h('h3', null, '重複の可能性がある明細'),
+        h('p', { class: 'note' }, '日付・摘要・金額が一致していますが、別の取引の可能性もあるため、すべて残しています。'),
+        foldList(groups.map(g => '元データ' + g.map(r => r.rowNo + '行目').join('・') + '：' + g[0].dateRaw + '　' + g[0].desc.trim() + '　' + amountText(g[0])), '重複の一覧')) : null,
+      warned.length ? h('div', null, h('h3', null, '読み取り時の注意'),
+        foldList(warned.map(r => '元データ' + r.rowNo + '行目：' + r.warnings.join('')), '注意の一覧')) : null,
+      (!groups.length && !warned.length) ? h('p', { class: 'note' }, '重複の可能性・読み取り時の注意はありませんでした。') : null,
+      h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn', onclick: () => go(3) }, '仕分け結果を見る')));
+  }
+  return h('div', { class: 'card' },
+    h('h2', null, '② CSV読み込み'),
+    h('p', { class: 'note' }, '明細A（カード形式）または明細B（銀行形式）のCSVを、1ファイルずつ読み込みます。UTF-8 / UTF-8 BOM付きに対応しています。'),
+    h('div', { class: 'row' }, pick, input),
+    S.loadError ? h('div', { class: 'msg err', role: 'alert' }, S.loadError + (S.records.length ? '（読み込み済みのデータはそのまま維持しています）' : '')) : null,
+    report);
+}
+
+/* ---- 画面3（全明細：要約＋理由の全文）---- */
+const summaryOf = r => r.summary || r.reason;
+function buildResultRows(filter){
+  const f = filter || 'all';
+  return S.records.filter(r => f === 'all' || r.toolCategory === f).map(r => h('tr', { 'data-id': r.id },
+    h('td', { 'data-l': '日付' }, r.dateRaw),
+    h('td', { class: 'desc', 'data-l': '摘要' }, r.desc, kindTag(r)),
+    h('td', { class: 'num', 'data-l': '金額' }, r.amountSigned == null ? '—' : fmtYen(r.amountSigned)),
+    h('td', { 'data-l': 'ツール仕分け' }, badge(r.toolCategory)),
+    h('td', { 'data-l': '理由' }, h('div', { class: 'sum' }, summaryOf(r)),
+      r.reclassFrom ? h('div', { class: 'warn-t' }, 'プロフィール変更により、ツール仕分けが「' + r.reclassFrom + '」から「' + r.toolCategory + '」に変わりました。') : null,
+      finalDiff(r) ? h('div', { class: 'warn-t' }, 'ツール仕分けは「' + r.toolCategory + '」ですが、最終区分は「' + r.finalCategory + '」で確定されています。') : null,
+      h('details', { class: 'det', open: S.openAll }, h('summary', null, '詳細（理由の全文）'), h('p', { class: 'full' }, r.reason))),
+    h('td', { 'data-l': '最終区分' }, finBadge(r))));
+}
+function reclassBanner(){
+  if (!S.reclass) return null;
+  return h('div', { class: 'msg warn' }, 'プロフィールの変更により再仕分けしました。ツール仕分けが変わった明細：' + S.reclass.changed + '件。確定済みの最終区分は維持しています。ツール仕分けと最終区分が食い違う明細：' + S.reclass.diffs + '件（該当行に表示しています。画面④で再変更できます）。');
+}
+function screenResult(){
+  const cnt = c => S.records.filter(r => r.toolCategory === c).length;
+  const tbody = h('tbody', { id: 'resBody' }); const info = h('p', { class: 'note', role: 'status' });
+  const toggle = h('button', { type: 'button', class: 'btn sub' });
+  const chipDefs = [['all','すべて', S.records.length], [CAT.BIZ, CAT.BIZ, cnt(CAT.BIZ)], [CAT.PRIV, CAT.PRIV, cnt(CAT.PRIV)], [CAT.CHK, CAT.CHK, cnt(CAT.CHK)]];
+  const chips = chipDefs.map(([v, t, n]) => h('button', { type: 'button', class: 'chip', 'data-v': v, onclick: () => { S.resFilter = v; fill(); } }, t + '（' + n + '）'));
+  function fill(){   // 表示だけを変える。件数照合・最終区分・CSV出力には影響しない
+    const rows = buildResultRows(S.resFilter); tbody.replaceChildren(...rows);
+    chips.forEach(c => c.setAttribute('aria-pressed', c.dataset.v === S.resFilter ? 'true' : 'false'));
+    info.textContent = '全' + S.records.length + '件中 ' + rows.length + '件を表示しています。' + (S.resFilter === 'all' ? '' : '（絞り込み：' + S.resFilter + '。絞り込みは表示だけで、CSV出力には影響しません）');
+    toggle.textContent = S.openAll ? 'すべての詳細を閉じる' : 'すべての詳細を開く';
+  }
+  toggle.addEventListener('click', () => { S.openAll = !S.openAll; tbody.querySelectorAll('details').forEach(d => { d.open = S.openAll; }); fill(); });
+  fill();
+  return h('div', null, h('div', { class: 'card' },
+    h('h2', null, '③ 仕分け結果'),
+    h('p', { class: 'note' }, 'ツールによる仕分けは「候補」です。税務上の可否を示すものではありません。最終区分は、次の画面で本人が確定します。'),
+    reclassBanner(),
+    h('div', { class: 'cards' },
+      h('div', { class: 'stat biz' }, h('b', null, cnt(CAT.BIZ)), h('span', null, '事業候補')),
+      h('div', { class: 'stat priv' }, h('b', null, cnt(CAT.PRIV)), h('span', null, '私用候補')),
+      h('div', { class: 'stat chk' }, h('b', null, cnt(CAT.CHK)), h('span', null, '要判断')),
+      h('div', { class: 'stat un' }, h('b', null, unconfirmed()), h('span', null, '未確認（全' + S.records.length + '件中）'))),
+    h('div', { role: 'group', 'aria-label': 'ツール仕分けで絞り込み', class: 'chips' }, chips),
+    h('div', { class: 'row', style: 'margin-top:0' }, info, toggle),
+    h('table', { class: 'res', id: 'resTable' },
+      h('thead', null, h('tr', null, h('th', null, '日付'), h('th', null, '摘要'), h('th', { class: 'num' }, '金額'), h('th', null, 'ツール仕分け'), h('th', null, '理由（要約と詳細）'), h('th', null, '最終区分'))),
+      tbody),
+    h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn', onclick: () => go(4) }, '明細の確認へ進む'))));
+}
+
+/* ---- 画面4 ---- */
+function screenConfirm(){
+  const list = h('div', { id: 'items' });
+  const un = h('span', { class: 'un' }); const prog = h('progress', { max: S.records.length, value: 0, 'aria-label': '確定の進み具合' });
+  const note = h('div');
+  const next = h('button', { type: 'button', class: 'btn', id: 'nextBtn' }, '次の未確認へ');
+  const sel = h('select', { id: 'flt', 'aria-label': '表示の絞り込み' },
+    [['all','すべて'],['un','未確認のみ'],[CAT.BIZ, CAT.BIZ],[CAT.PRIV, CAT.PRIV],[CAT.CHK, CAT.CHK]].map(([v, t]) => h('option', { value: v }, t)));
+  sel.value = S.filter;
+  const visible = r => S.filter === 'all' || (S.filter === 'un' ? !r.finalCategory : r.toolCategory === S.filter);
+  const card = id => list.querySelector('[data-id="' + id + '"]');
+  function refreshBar(){
+    const n = unconfirmed(); un.textContent = '未確認 ' + n + '件 / 全' + S.records.length + '件'; un.className = 'un' + (n === 0 ? ' zero' : '');
+    prog.value = S.records.length - n; next.disabled = n === 0;
+    const d = S.records.filter(finalDiff).length;
+    note.replaceChildren(d ? h('div', { class: 'msg warn' }, 'ツール仕分けと最終区分が食い違う明細が' + d + '件あります（該当カードに表示）。必要に応じて再変更できます。') : '');
+  }
+  const head = r => h('div', { class: 'h' }, h('span', { class: 't' }, r.dateRaw + '　' + r.desc, kindTag(r)),
+    h('span', null, h('b', null, amountText(r)), '　', badge(r.toolCategory)));
+  const diffNotes = r => [
+    r.reclassFrom ? h('div', { class: 'warn-t' }, 'プロフィール変更により、ツール仕分けが「' + r.reclassFrom + '」から「' + r.toolCategory + '」に変わりました。') : null,
+    finalDiff(r) ? h('div', { class: 'warn-t' }, 'ツール仕分けは「' + r.toolCategory + '」ですが、最終区分は「' + r.finalCategory + '」で確定されています。') : null];
+  function fullCard(r){
+    const mk = v => h('button', { type: 'button', 'aria-pressed': r.finalCategory === v ? 'true' : 'false', onclick: () => choose(r, v) }, v);
+    return h('div', { class: 'item ' + catClass(r.toolCategory), 'data-id': r.id },
+      head(r), h('p', { class: 'reason' }, r.reason), diffNotes(r),   // 未確認カードでは理由の全文を表示
+      h('div', { class: 'choice', role: 'group', 'aria-label': r.desc.trim() + ' の最終区分' }, mk('事業'), mk('私用'),
+        r.finalCategory ? h('button', { type: 'button', class: 'plain', onclick: () => reset(r) }, '未確認に戻す') : null,
+        r.finalCategory ? h('button', { type: 'button', class: 'plain', onclick: () => closeEdit(r) }, '閉じる') : null, finBadge(r)));
+  }
+  function compactCard(r){
+    return h('div', { class: 'item compact ' + catClass(r.toolCategory), 'data-id': r.id },
+      h('span', { class: 't' }, r.dateRaw + '　' + r.desc, kindTag(r)), h('b', null, amountText(r)), badge(r.toolCategory), finBadge(r),
+      h('button', { type: 'button', class: 'chg', 'aria-label': r.desc.trim() + ' の確定内容を変更する', onclick: () => openEdit(r) }, '変更する'),
+      diffNotes(r));
+  }
+  const row = r => (!r.finalCategory || S.edit.has(r.id)) ? fullCard(r) : compactCard(r);
+  function swap(r, focusSel){
+    const old = card(r.id); if (old) old.replaceWith(row(r));
+    refreshBar(); const el = card(r.id); const f = el && el.querySelector(focusSel); if (f) f.focus();
+  }
+  function choose(r, v){ r.finalCategory = v; S.edit.delete(r.id); S.lastId = r.id; swap(r, '.chg');
+    live('「' + r.desc.trim() + '」を「' + v + '」で確定しました。未確認は残り' + unconfirmed() + '件です。'); }
+  function reset(r){ r.finalCategory = null; S.edit.delete(r.id); S.lastId = r.id; swap(r, '.choice button');
+    live('「' + r.desc.trim() + '」を未確認に戻しました。未確認は' + unconfirmed() + '件です。'); }
+  function openEdit(r){ S.edit.add(r.id); S.lastId = r.id; swap(r, '.choice button[aria-pressed="true"]'); }
+  function closeEdit(r){ S.edit.delete(r.id); swap(r, '.chg'); }
+  function fill(){
+    S.filter = sel.value;
+    const f = S.records.filter(visible);
+    list.replaceChildren(...f.map(row), f.length ? '' : h('p', { class: 'note' }, '該当する明細はありません。')); refreshBar();
+  }
+  sel.addEventListener('change', fill);
+  function goNext(){   // 次の未確認カードへ移動するだけ。自動確定はしない
+    const rest = S.records.filter(r => !r.finalCategory); if (!rest.length) return;
+    const a = document.activeElement && document.activeElement.closest ? document.activeElement.closest('[data-id]') : null;
+    const cur = a && list.contains(a) ? +a.dataset.id : S.lastId;
+    const idx = S.records.findIndex(r => r.id === cur) + 1;
+    const seq = S.records.slice(idx).concat(S.records.slice(0, idx)).filter(r => !r.finalCategory);
+    let target = seq.find(visible), msg = '';
+    if (!target) { target = seq[0]; if (S.filter !== 'all') { sel.value = 'all'; fill(); msg = '絞り込みを解除して移動しました。'; } }
+    S.lastId = target.id; const el = card(target.id);
+    if (el) { el.scrollIntoView({ block: 'center' }); const f = el.querySelector('.choice button'); if (f) f.focus(); }
+    live(msg + '次の未確認：' + target.desc.trim() + '。未確認は残り' + unconfirmed() + '件です。');
+  }
+  next.addEventListener('click', goNext);
+  fill();
+  return h('div', null, h('div', { class: 'card' }, h('h2', null, '④ 明細の確認'),
+    h('p', { class: 'note' }, '全明細について、理由を確認して最終区分を「事業」または「私用」から選んでください。要判断の明細も、本人が選ぶまで確定されません。確定済みの明細は「変更する」でいつでも再編集できます。'),
+    reclassBanner()),
+    h('div', { class: 'bar' }, un, prog, h('span', { class: 'sp' }),
+      h('label', { for: 'flt', style: 'margin:0;font-weight:400' }, '絞り込み'), sel, next), note, list,
+    h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn', onclick: () => go(5) }, '最終確認へ進む')));
+}
+
+/* ---- 画面5 ---- */
+function download(text, name){
+  const blob = new Blob(['﻿', text], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob); const a = h('a', { href: url, download: name });
+  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function screenFinal(){
+  const recs = S.records, read = S.stats ? S.stats.read : 0, shown = buildResultRows('all').length;   // 絞り込みの影響を受けない
+  const csv = buildCsv(recs), v = verifyOutput(csv.text, recs), un = unconfirmed();
+  const countOk = read === shown && shown === v.outCount && v.headOk && v.colsOk;
+  const sumOk = v.outSum === v.inSum;
+  const ready = un === 0 && recs.length > 0 && countOk && sumOk;
+  const fin = c => recs.filter(r => r.finalCategory === c).length;
+  const mark = ok => h('span', { class: ok ? 'ok-t' : 'ng-t' }, ok ? '　✓ 一致' : '　✗ 不一致');
+  const reasons = [];
+  if (un) reasons.push('未確認の明細が' + un + '件あります。');
+  if (!countOk) reasons.push('件数または列構成の照合が一致していません。');
+  if (!sumOk) reasons.push('金額合計の照合が一致していません。');
+  const btn = h('button', { type: 'button', class: 'btn', disabled: !ready, onclick: () => {
+    const c = buildCsv(S.records); const d = new Date();
+    download(c.text, 'shiwake-note_' + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + '.csv');
+  } }, 'CSVを出力する');
+  const diffs = recs.filter(finalDiff).length, dups = recs.filter(r => r.dup).length;
+  return h('div', { class: 'card' }, h('h2', null, '⑤ 最終確認・CSV出力'),
+    h('p', { class: 'note' }, '全明細の最終区分が確定すると、CSVを出力できます。'),
+    h('div', { class: 'cards' },
+      h('div', { class: 'stat un' }, h('b', null, un), h('span', null, '未確認')),
+      h('div', { class: 'stat biz' }, h('b', null, fin('事業')), h('span', null, '事業（確定）')),
+      h('div', { class: 'stat priv' }, h('b', null, fin('私用')), h('span', null, '私用（確定）'))),
+    h('h3', null, '件数・金額の照合'),
+    h('dl', { class: 'kv' },
+      h('dt', null, '読込件数'), h('dd', null, read + '件'),
+      h('dt', null, '画面表示件数'), h('dd', null, shown + '件'),
+      h('dt', null, '出力件数'), h('dd', null, v.outCount + '件', mark(countOk)),
+      h('dt', null, '金額合計（元データ→出力）'), h('dd', null, fmtYen(v.inSum) + '円 → ' + fmtYen(v.outSum) + '円', mark(sumOk))),
+    diffs ? h('div', { class: 'msg warn' }, 'ツール仕分けと最終区分が食い違う明細が' + diffs + '件あります。内容を確認のうえ、このまま出力するか画面④で再変更してください。') : null,
+    dups ? h('div', { class: 'msg info' }, '重複の可能性がある明細が' + dups + '件あります（削除せずすべて出力します。理由欄に注記しています）。') : null,
+    csv.altered.length
+      ? h('div', { class: 'msg warn' }, '次の' + csv.altered.length + '件は、表計算ソフトでの数式誤実行を防ぐため、出力CSVの値の先頭に「\'」を付けます（原文とは異なる出力になります。元データは変更していません）。',
+          h('ul', { class: 'sm' }, csv.altered.slice(0, 20).map(a => h('li', null, '元データ' + a.rowNo + '行目・' + a.col + '：' + a.orig.slice(0, 40)))))
+      : h('div', { class: 'msg ok' }, '日付・摘要・理由はすべて原文のまま出力されます（先頭が記号の値はありません）。'),
+    h('div', { class: 'msg info' }, '出力列：' + OUT_HEADERS.join('／') + '（UTF-8 BOM付き）。金額は支出が正、入金・返金が負です。'),
+    h('div', { class: 'row' }, btn, h('button', { type: 'button', class: 'btn sub', onclick: () => go(4) }, '明細の確認へ戻る')),
+    ready ? null : h('div', { class: 'msg err', role: 'status' }, 'CSVを出力できません：' + reasons.join('')));
+}
+
+/* ---- 描画 ---- */
+function render(){
+  const screens = { 1: screenProfile, 2: screenLoad, 3: screenResult, 4: screenConfirm, 5: screenFinal };
+  app.replaceChildren(stepper(), screens[S.step]());
+  document.getElementById('foot').replaceChildren(h('div', { class: 'disc', id: 'disclaimer' }, DISCLAIMER_TEXT));
+}
+window.addEventListener('beforeunload', e => { if (hasData()) { e.preventDefault(); e.returnValue = ''; } });
+render();
+</script>
+</body>
+</html>
