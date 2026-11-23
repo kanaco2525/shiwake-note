@@ -199,7 +199,9 @@ const ALIAS = {
   inn:    ['入金額','入金','お預入れ','お預入額','預入額'],
   inst:   ['支払回数','回数','支払区分'],
   note:   ['備考','メモ','摘要2'],
-  bal:    ['残高','差引残高']
+  bal:    ['残高','差引残高'],
+  dirLoose: ['区分','種別','取引種別','種類'],   // 入出金区分かどうかを、値の内容で判断する候補列
+  dirc:   ['入出金区分','入出金','出入金区分','出入金','入払区分','取引区分','収支区分','収支','入出区分']   // 金額が1列の形式で、入金・出金を示す列
 };
 function detectColumns(headerRow){
   const hs = headerRow.map(normHeader); const idx = {};
@@ -208,13 +210,14 @@ function detectColumns(headerRow){
     const p = hs.findIndex(h => al.includes(h));
     idx[k] = p;
   }
-  let format = null;
+  let format = null, variant = '';
   if (idx.out >= 0 && idx.inn >= 0) format = 'B';
+  else if (idx.amount >= 0 && idx.dirc >= 0) { format = 'B'; variant = '金額＋入出金区分の列'; }   // 入金・出金を区分列で明確に判定できる形式
   else if (idx.amount >= 0) format = 'A';
   if (!format || idx.date < 0 || idx.desc < 0) {
     throw new Error('明細A（利用日／利用店名／利用金額…）または明細B（取引日／摘要／出金額／入金額…）の列を判別できません。検出した列名：' + (headerRow.map(h => '「' + h + '」').join('') || '（なし）'));
   }
-  return { format, idx };
+  return { format, idx, variant };
 }
 
 /* ---- 日付・金額 ---- */
@@ -241,44 +244,69 @@ function parseInstallments(raw){
 }
 const normDesc = s => nfkc(s).toLowerCase().replace(/[\s　]/g, '');
 const REFUND_RE = /返金|ヘンキン|取消|キャンセル/;
+const inKind = d => REFUND_RE.test(d) ? 'refund' : (/利息|リソク/.test(d) ? 'interest' : 'income');
+// 入出金区分の値：明確に読み取れるものだけを受け付ける（それ以外は読み込みを中止する）
+const DIR_OUT = ['出金','支出','引出','引出し','引き出し','払出','払出し','支払','支払い','お支払','お支払い','ご利用','利用','購入','デビット','debit','出'];
+const DIR_IN  = ['入金','収入','預入','預入れ','お預入','お預入れ','返金','払戻','払戻し','クレジット','credit','入'];
+function dirOf(v){ const s = normDesc(v); if (DIR_OUT.includes(s)) return 'out'; if (DIR_IN.includes(s)) return 'in'; return null; }
 
 /* ---- 明細の読み込み（元データを全件保持） ---- */
 function parseStatement(text, fileName){
   const rows = parseCsv(text);
   if (!rows.length) throw new Error('ファイルが空です。');
-  const { format, idx } = detectColumns(rows[0]);
+  let { format, idx, variant } = detectColumns(rows[0]);
+  if (format === 'A' && idx.dirLoose >= 0) {   // 「区分」「種別」の列：値がすべて入金・出金と読めるときだけ入出金区分として扱う。まったく読めなければ無視し、一部だけ読める場合は誤読を避けて中止する
+    let mapped = 0, other = 0;
+    for (let i = 1; i < rows.length; i++) { const r = rows[i]; if (r.every(c => String(c).trim() === '')) continue; const v = String(idx.dirLoose < r.length ? r[idx.dirLoose] : '').trim(); if (v === '') continue; if (dirOf(v)) mapped++; else other++; }
+    if (mapped > 0 && other === 0) { format = 'B'; variant = '金額＋入出金区分の列'; idx.dirc = idx.dirLoose; }
+    else if (mapped > 0 && other > 0) throw new Error('「' + rows[0][idx.dirLoose] + '」列に、入金・出金と読める値と、そうでない値が混在しています。誤った仕分けを避けるため、読み込みを中止しました。出金額／入金額の列がある形式、または「入金」「出金」で統一された区分の列があるCSVを使用してください。');
+  }
   const records = []; let blank = 0; const cell = (r, k) => (idx[k] >= 0 && idx[k] < r.length ? r[idx[k]] : '');
+  if (variant) {   // 入出金区分の列：判定できない値が1行でもあれば、誤った仕分けを続けずに中止する
+    const bad = [];
+    for (let i = 1; i < rows.length; i++) { const r = rows[i]; if (r.every(c => String(c).trim() === '')) continue; if (!dirOf(cell(r, 'dirc'))) bad.push((i + 1) + '行目：' + (String(cell(r, 'dirc')).trim() === '' ? '（空欄）' : '「' + String(cell(r, 'dirc')).trim().slice(0, 20) + '」')); }
+    if (bad.length) throw new Error('「' + rows[0][idx.dirc] + '」列の値から、入金・出金を判定できない行が' + bad.length + '件あります（' + bad.slice(0, 3).join('、') + (bad.length > 3 ? ' ほか' : '') + '）。誤った仕分けを避けるため、読み込みを中止しました。出金額／入金額の列がある形式、または「入金」「出金」と読める区分の列があるCSVを使用してください。');
+  }
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
     if (r.every(c => String(c).trim() === '')) { blank++; continue; }
     const rec = { id: records.length + 1, source: format, rowNo: i + 1, raw: r.slice(), warnings: [],
       dateRaw: cell(r,'date'), desc: cell(r,'desc'), noteRaw: cell(r,'note'),
       date: null, descNorm: normDesc(cell(r,'desc')), amountSigned: null, direction: 'unknown', kind: 'unknown',
-      installments: null, dup: 0, toolCategory: null, reason: '', finalCategory: null, reclassFrom: null, refund: null };
+      amountRaw: '', instColumn: true, installments: null, dup: 0, toolCategory: null, reason: '', finalCategory: null, reclassFrom: null, refund: null };
     if (r.length !== rows[0].length) rec.warnings.push('列数がヘッダーと異なります（' + r.length + '列）。読み取れた範囲で保持しました。');
     rec.date = parseDate(rec.dateRaw);
     if (!rec.date) rec.warnings.push('日付を読み取れません（原文のまま保持）。');
     if (format === 'A') {
-      const a = parseAmount(cell(r,'amount'));
+      rec.amountRaw = cell(r,'amount');   // 出力CSVには、元の表記をそのまま使う（数値の解析は内部の判定用）
+      const a = parseAmount(rec.amountRaw);
       if (a.empty || a.bad) rec.warnings.push('金額を読み取れません。');
       else { rec.amountSigned = a.neg ? -a.value : a.value; rec.direction = rec.amountSigned < 0 ? 'in' : 'out'; }
-      rec.installments = parseInstallments(cell(r,'inst'));
-      if (rec.installments == null) rec.warnings.push('支払回数を読み取れません。');
+      rec.instColumn = idx.inst >= 0;   // 支払回数の列が無いCSVでは、分割払いの判定を行わない
+      if (rec.instColumn) { rec.installments = parseInstallments(cell(r,'inst')); if (rec.installments == null) rec.warnings.push('支払回数を読み取れません。'); }
       rec.kind = rec.direction === 'in' ? 'refund' : (rec.direction === 'out' ? 'purchase' : 'unknown');
+    } else if (variant) {
+      rec.amountRaw = cell(r,'amount');
+      const a = parseAmount(rec.amountRaw), d = dirOf(cell(r,'dirc'));
+      if (a.empty || a.bad) rec.warnings.push('金額を読み取れません。');
+      else {
+        if (a.neg) rec.warnings.push('金額がマイナスですが、入出金区分の列を優先して読み込みました。');
+        rec.direction = d; rec.amountSigned = d === 'in' ? -a.value : a.value; rec.kind = d === 'in' ? inKind(rec.descNorm) : 'purchase';
+      }
     } else {
-      const o = parseAmount(cell(r,'out')), n = parseAmount(cell(r,'inn'));
+      const oRaw = cell(r,'out'), nRaw = cell(r,'inn'); rec.amountRaw = String(oRaw).trim() !== '' ? oRaw : nRaw;   // 出力CSVには、入金額も元の値のまま使う
+      const o = parseAmount(oRaw), n = parseAmount(nRaw);
       const oOk = !o.empty && !o.bad && !o.neg, nOk = !n.empty && !n.bad && !n.neg;
       if ((o.bad || n.bad) || (o.neg || n.neg)) rec.warnings.push('出金額または入金額を読み取れません。');
       else if (oOk && nOk) rec.warnings.push('出金額と入金額の両方に値があり、取引方向を決められません。');
       else if (!oOk && !nOk) rec.warnings.push('出金額・入金額のどちらにも値がありません。');
       else if (oOk) { rec.amountSigned = o.value; rec.direction = 'out'; rec.kind = 'purchase'; }
-      else { rec.amountSigned = -n.value; rec.direction = 'in';
-        rec.kind = REFUND_RE.test(rec.descNorm) ? 'refund' : (/利息|リソク/.test(rec.descNorm) ? 'interest' : 'income'); }
+      else { rec.amountSigned = -n.value; rec.direction = 'in'; rec.kind = inKind(rec.descNorm); }
     }
     records.push(rec);
   }
   markDuplicates(records);
-  return { format, records, stats: { fileName, totalRows: rows.length - 1, read: records.length, blank } };
+  return { format, records, stats: { fileName, totalRows: rows.length - 1, read: records.length, blank, variant } };
 }
 function markDuplicates(records){
   const m = new Map();
@@ -476,7 +504,7 @@ function classifyOne(r, PA, all){
     const privScore = priv.length ? TH.W_PRIV : 0;
     const forced = [], forcedS = [];
     if (r.amountSigned == null || r.direction === 'unknown') { forced.push('金額または取引方向を読み取れないため、判断が必要です。'); forcedS.push('金額・方向を読み取れない'); }
-    if (r.source === 'A') {
+    if (r.source === 'A' && r.instColumn !== false) {
       if (r.installments == null) { forced.push('支払回数が読み取れないため、判断が必要です。'); forcedS.push('支払回数を読み取れない'); }
       else if (r.installments >= 2) { forced.push('支払回数が' + r.installments + '回の分割払いのため、判断が必要です。'); forcedS.push(r.installments + '回の分割払い'); }
     }
@@ -540,13 +568,20 @@ function guardField(v, altered, info){
   if (/^[=+\-@\t\r]/.test(s)) { altered.push({ rowNo: info.rowNo, col: info.col, orig: s, out: "'" + s }); return "'" + s; }
   return s;
 }
+// 金額は元の表記のまま出力する。数値として読める値には手を加えず、数値でない文字列（数式として解釈され得るもの）にだけインジェクション対策を行う
+function amountOut(r){
+  const s = String(r.amountRaw == null ? '' : r.amountRaw); const p = parseAmount(s);
+  if (s === '' || (!p.empty && !p.bad)) return { text: s, guarded: false };
+  const g = /^[=+\-@\t\r]/.test(s); return { text: g ? "'" + s : s, guarded: g };
+}
+function amountOutText(r, altered){ const a = amountOut(r); if (a.guarded) altered.push({ rowNo: r.rowNo, col: '金額', orig: String(r.amountRaw), out: a.text }); return a.text; }
 function buildCsv(records){
   const altered = []; const lines = [OUT_HEADERS.map(csvField).join(',')];
   records.forEach(r => {
     lines.push([
       csvField(guardField(r.dateRaw, altered, { rowNo:r.rowNo, col:'日付' })),
       csvField(guardField(r.desc, altered, { rowNo:r.rowNo, col:'摘要' })),
-      r.amountSigned == null ? '' : String(r.amountSigned),
+      csvField(amountOutText(r, altered)),
       r.toolCategory, r.finalCategory || '',
       csvField(guardField(r.reason, altered, { rowNo:r.rowNo, col:'理由' }))
     ].join(','));
@@ -557,9 +592,11 @@ function verifyOutput(text, records){
   const rows = parseCsv(text.replace(/^﻿/, ''));
   const head = rows[0] || []; const data = rows.slice(1);
   const headOk = head.length === OUT_HEADERS.length && head.every((h, i) => h === OUT_HEADERS[i]);
-  const outSum = data.reduce((s, r) => s + (r[2] === '' ? 0 : Number(r[2])), 0);
-  const inSum = records.reduce((s, r) => s + (r.amountSigned == null ? 0 : r.amountSigned), 0);
-  return { headOk, outCount: data.length, outSum, inSum, colsOk: data.every(r => r.length === 6) };
+  const absOf = s => { const p = parseAmount(String(s).replace(/^'/, '')); return (p.empty || p.bad) ? 0 : p.value; };   // 符号を除いた金額
+  const outSum = data.reduce((s, r) => s + absOf(r[2]), 0);
+  const inSum = records.reduce((s, r) => s + (r.amountSigned == null ? absOf(r.amountRaw) : Math.abs(r.amountSigned)), 0);
+  const amountTextOk = data.length === records.length && records.every((r, i) => data[i][2] === amountOut(r).text);   // 金額の表記が元データと同じ
+  return { headOk, outCount: data.length, outSum, inSum, colsOk: data.every(r => r.length === 6), amountTextOk };
 }
 // ==CORE-END==
 /* =====================================================================
@@ -677,12 +714,12 @@ function screenLoad(){
   if (st) {
     const groups = dupGroups(), warned = S.records.filter(r => r.warnings.length);
     report = h('div', null,
-      h('div', { class: 'msg ok', role: 'status', tabindex: '-1' }, '「' + st.fileName + '」を読み込みました（' + (S.format === 'A' ? '明細A：カード形式' : '明細B：銀行形式') + '）。'),
+      h('div', { class: 'msg ok', role: 'status', tabindex: '-1' }, '「' + st.fileName + '」を読み込みました（' + (S.format === 'A' ? '明細A：カード形式' : '明細B：銀行形式' + (st.variant ? '（' + st.variant + '）' : '')) + '）。'),
       h('div', { class: 'cards' },
         h('div', { class: 'stat un' }, h('b', null, st.read), h('span', null, '読込件数')),
         h('div', { class: 'stat ' + (warned.length ? 'chk' : 'biz') }, h('b', null, warned.length), h('span', null, '読み取り注意のある明細')),
         h('div', { class: 'stat ' + (groups.length ? 'chk' : 'biz') }, h('b', null, S.records.filter(r => r.dup).length), h('span', null, '重複の可能性（削除せず保持）')),
-        h('div', { class: 'stat priv' }, h('b', null, st.blank), h('span', null, '除外した空行'))),
+        h('div', { class: 'stat priv' }, h('b', null, st.blank), h('span', null, '読み飛ばした空行'))),
       groups.length ? h('div', null, h('h3', null, '重複の可能性がある明細'),
         h('p', { class: 'note' }, '日付・摘要・金額が一致していますが、別の取引の可能性もあるため、すべて残しています。'),
         foldList(groups.map(g => '元データ' + g.map(r => r.rowNo + '行目').join('・') + '：' + g[0].dateRaw + '　' + g[0].desc.trim() + '　' + amountText(g[0])), '重複の一覧')) : null,
@@ -797,8 +834,8 @@ function screenConfirm(){
     r.reclassFrom ? h('div', { class: 'warn-t' }, 'プロフィール変更により、ツール仕分けが「' + r.reclassFrom + '」から「' + r.toolCategory + '」に変わりました。') : null,
     finalDiff(r) ? compareBox(r) : null,   // ツールの仕分けと本人の最終区分を並べて表示（フル表示・コンパクト表示の両方）
     (S.keep.has(r.id) && !finalDiff(r)) ? h('div', { class: 'msg info' }, r.finalCategory
-      ? '仕分けと一致しました。次の絞り込み操作で、この明細は「仕分けと異なる明細」の一覧から除外されます。'
-      : '未確認に戻したため、仕分けと異なる明細の対象外になりました。次の絞り込み操作で、この一覧から除外されます。') : null];
+      ? '仕分けと一致しました。次の絞り込み操作で、この明細は「仕分けと異なる明細」の一覧から外れます。'
+      : '未確認に戻したため、仕分けと異なる明細には数えません。次の絞り込み操作で、この一覧から外れます。') : null];
   function fullCard(r){
     const mk = v => h('button', { type: 'button', 'aria-pressed': r.finalCategory === v ? 'true' : 'false', onclick: () => choose(r, v) }, v);
     return h('div', { class: 'item ' + catClass(r.toolCategory), 'data-id': r.id },
@@ -825,16 +862,16 @@ function screenConfirm(){
   }
   function choose(r, v){ const was = finalDiff(r); r.finalCategory = v; S.edit.delete(r.id); S.lastId = r.id; const resolved = afterChange(r, was);
     swap(r, '.chg');
-    live('「' + r.desc.trim() + '」を「' + v + '」で確定しました。' + (resolved ? '仕分けと一致しました。次の絞り込み操作で、この一覧から除外されます。' : '') + '未確認は残り' + unconfirmed() + '件、仕分けと異なる明細は' + S.records.filter(finalDiff).length + '件です。'); }
+    live('「' + r.desc.trim() + '」を「' + v + '」で確定しました。' + (resolved ? '仕分けと一致しました。次の絞り込み操作で、この一覧から外れます。' : '') + '未確認は残り' + unconfirmed() + '件、仕分けと異なる明細は' + S.records.filter(finalDiff).length + '件です。'); }
   function reset(r){ const was = finalDiff(r); r.finalCategory = null; S.edit.delete(r.id); S.lastId = r.id; const resolved = afterChange(r, was);
     swap(r, '.choice button');
-    live('「' + r.desc.trim() + '」を未確認に戻しました。' + (resolved ? '仕分けと異なる明細の対象外になりました。次の絞り込み操作で、この一覧から除外されます。' : '') + '未確認は' + unconfirmed() + '件、仕分けと異なる明細は' + S.records.filter(finalDiff).length + '件です。'); }
+    live('「' + r.desc.trim() + '」を未確認に戻しました。' + (resolved ? '仕分けと異なる明細には数えません。次の絞り込み操作で、この一覧から外れます。' : '') + '未確認は' + unconfirmed() + '件、仕分けと異なる明細は' + S.records.filter(finalDiff).length + '件です。'); }
   function showDiff(){ sel.value = 'diff'; fill(); focusFirstCard(); live('仕分けと異なる明細を' + S.records.filter(finalDiff).length + '件表示しました。'); }
   function emptyNote(){
     const d = S.records.filter(finalDiff).length;
     if (S.filter === 'un') return h('div', null, h('p', { class: 'note' }, '未確認の明細はありません（全件確定済みです）'),
       d ? h('button', { type: 'button', class: 'btn sub', onclick: showDiff }, '仕分けと異なる明細（' + d + '件）を見る') : null);
-    if (S.filter === 'diff') return h('p', { class: 'note' }, '仕分けと異なる明細はありません。（ツールの仕分けが「要判断」の明細と、未確認の明細は対象に含めません）');
+    if (S.filter === 'diff') return h('p', { class: 'note' }, '仕分けと異なる明細はありません。（ツールの仕分けが「要判断」の明細と、未確認の明細は、この一覧に含めません）');
     return h('p', { class: 'note' }, '該当する明細はありません。');
   }
   function openEdit(r){ S.edit.add(r.id); S.lastId = r.id; swap(r, '.choice button[aria-pressed="true"]'); }
@@ -877,14 +914,15 @@ function screenFinal(){
   const recs = S.records, read = S.stats ? S.stats.read : 0, shown = buildResultRows('all').length;   // 絞り込みの影響を受けない
   const csv = buildCsv(recs), v = verifyOutput(csv.text, recs), un = unconfirmed();
   const countOk = read === shown && shown === v.outCount && v.headOk && v.colsOk;
-  const sumOk = v.outSum === v.inSum;
-  const ready = un === 0 && recs.length > 0 && countOk && sumOk;
+  const sumOk = v.outSum === v.inSum, textOk = v.amountTextOk;
+  const ready = un === 0 && recs.length > 0 && countOk && sumOk && textOk;
   const fin = c => recs.filter(r => r.finalCategory === c).length;
   const mark = ok => h('span', { class: ok ? 'ok-t' : 'ng-t' }, ok ? '　✓ 一致' : '　✗ 不一致');
   const reasons = [];
   if (un) reasons.push('未確認の明細が' + un + '件あります。');
   if (!countOk) reasons.push('件数または列構成の照合が一致していません。');
   if (!sumOk) reasons.push('金額合計の照合が一致していません。');
+  if (!textOk) reasons.push('金額の表記が元データと一致していません。');
   const btn = h('button', { type: 'button', class: 'btn', disabled: !ready, onclick: () => {
     const c = buildCsv(S.records); const d = new Date();
     download(c.text, 'shiwake-note_' + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + '.csv');
@@ -901,7 +939,8 @@ function screenFinal(){
       h('dt', null, '読込件数'), h('dd', null, read + '件'),
       h('dt', null, '画面表示件数'), h('dd', null, shown + '件'),
       h('dt', null, '出力件数'), h('dd', null, v.outCount + '件', mark(countOk)),
-      h('dt', null, '金額合計（元データ→出力）'), h('dd', null, fmtYen(v.inSum) + '円 → ' + fmtYen(v.outSum) + '円', mark(sumOk))),
+      h('dt', null, '金額合計（符号なし・元データ→出力）'), h('dd', null, fmtYen(v.inSum) + '円 → ' + fmtYen(v.outSum) + '円', mark(sumOk)),
+      h('dt', null, '金額の表記（元データと同じ）'), h('dd', null, textOk ? '全件が元のとおり' : '一致しない行があります', mark(textOk))),
     diffs ? h('div', { class: 'msg info' },
       h('p', null, 'ツールの仕分けと異なる最終区分が' + diffs + '件あります。あなたの判断が優先されます。確認のための情報で、エラーではありません。このまま出力できます。'),
       h('button', { type: 'button', class: 'btn sub', onclick: () => { S.filter = 'diff'; go(4); focusFirstCard(); } }, '仕分けと異なる明細を画面④で表示')) : null,
@@ -910,7 +949,7 @@ function screenFinal(){
       ? h('div', { class: 'msg warn' }, '次の' + csv.altered.length + '件は、表計算ソフトでの数式誤実行を防ぐため、出力CSVの値の先頭に「\'」を付けます（原文とは異なる出力になります。元データは変更していません）。',
           h('ul', { class: 'sm' }, csv.altered.slice(0, 20).map(a => h('li', null, '元データ' + a.rowNo + '行目・' + a.col + '：' + a.orig.slice(0, 40)))))
       : h('div', { class: 'msg ok' }, '日付・摘要・理由はすべて原文のまま出力されます（先頭が記号の値はありません）。'),
-    h('div', { class: 'msg info' }, '出力列：' + OUT_HEADERS.join('／') + '（UTF-8 BOM付き）。金額は支出が正、入金・返金が負です。'),
+    h('div', { class: 'msg info' }, '出力列：' + OUT_HEADERS.join('／') + '（UTF-8 BOM付き）。日付・摘要・金額は、元データの表記のまま出力します。入金・返金の別は「理由」欄に記載しています。'),
     h('div', { class: 'row' }, btn, h('button', { type: 'button', class: 'btn sub', onclick: () => go(4) }, '明細の確認へ戻る')),
     ready ? null : h('div', { class: 'msg err', role: 'status' }, 'CSVを出力できません：' + reasons.join('')));
 }
