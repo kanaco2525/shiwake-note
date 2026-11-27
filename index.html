@@ -34,6 +34,10 @@ h2:focus{outline:none}
 h3{margin:var(--sp4) 0 var(--sp2);font-size:var(--fs-head);color:var(--navy)}
 p{margin:0 0 var(--sp3)}
 .note{font-size:var(--fs-note);color:var(--muted);margin:0 0 var(--sp3)}
+.prog{margin:0 0 var(--sp2)}
+.ex{display:block;font-size:var(--fs-note);color:var(--muted)}
+.disc-inline{margin:var(--sp2) 0 0}
+.intro{margin:0 0 var(--sp3);line-height:1.7}
 .warn-t{font-size:var(--fs-note);color:var(--orange);margin-top:var(--sp1)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:var(--sp4);margin-bottom:var(--sp4)}
 /* 進行状況 */
@@ -92,7 +96,12 @@ details.det .full{margin:var(--sp1) 0 0;padding:var(--sp2) var(--sp3);background
 /* 画面④のカード */
 .item{border:1px solid var(--line);border-left:6px solid var(--line);border-radius:8px;padding:var(--sp3);margin-bottom:var(--sp3);background:#fff}
 .item.biz{border-left-color:var(--green)}.item.priv{border-left-color:var(--gray)}.item.chk{border-left-color:var(--orange)}
-.item .h{display:flex;gap:var(--sp2);flex-wrap:wrap;align-items:baseline;justify-content:space-between}
+.item .r1{display:flex;gap:var(--sp2) var(--sp4);flex-wrap:wrap;align-items:center}
+.item .r2{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--sp2) var(--sp4);align-items:center;margin-top:var(--sp2)}
+.item .r2 .t{font-size:var(--fs-body);overflow-wrap:anywhere}
+.item .r2 .choice{margin-top:0;flex-wrap:nowrap}
+.item .r4{display:flex;gap:var(--sp2) var(--sp3);flex-wrap:wrap;align-items:center;margin-top:var(--sp3)}
+.item .r4 button.plain{min-height:44px;min-width:96px;border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:6px;font:inherit;padding:0 var(--sp3);cursor:pointer}
 .item .t{font-weight:700;word-break:break-word}
 .item .reason{font-size:var(--fs-note);margin:var(--sp2) 0 0}
 .item.compact{padding:var(--sp2) var(--sp3);display:flex;gap:var(--sp2) var(--sp3);flex-wrap:wrap;align-items:center}
@@ -114,6 +123,59 @@ details.det .full{margin:var(--sp1) 0 0;padding:var(--sp2) var(--sp3);background
 .cmp-n{flex:1 1 100%;margin:0;font-size:var(--fs-note)}
 .item.compact .cmp{flex:1 1 100%;margin-top:0}
 .item .msg{margin:var(--sp2) 0 0}
+.dupmark{color:var(--red);font-weight:700}
+.dupmark-done{color:var(--navy);font-weight:700}
+.dupbtns{display:flex;flex-wrap:wrap;gap:var(--sp1)}
+.dupbtn{min-height:44px;border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:6px;font:inherit;font-size:var(--fs-note);padding:0 var(--sp3);cursor:pointer}
+.dupbtn[aria-pressed="true"]{background:var(--navy);color:#fff;font-weight:700}
+.gnav{margin:0 0 var(--sp2);scroll-margin-top:96px}
+.gnav-row{display:flex;flex-wrap:wrap;gap:var(--sp2);align-items:center}
+.gnav-row select{max-width:100%;min-width:0;flex:1 1 220px}
+.gnav-info{margin:var(--sp1) 0 0;font-size:var(--fs-note);color:var(--navy-d)}
+details.bulk.gsec{border-width:1px;margin-bottom:var(--sp1)}
+.undo-one{margin-bottom:var(--sp2)}
+.grp-list{display:flex;flex-direction:column;gap:var(--sp2);margin:var(--sp2) 0}
+.grp-row{border:1px solid var(--line);border-radius:6px;padding:var(--sp2) var(--sp3)}
+.grp-meta{display:flex;flex-wrap:wrap;gap:var(--sp1) var(--sp3);align-items:center;font-size:var(--fs-note);margin:var(--sp1) 0 var(--sp1) 28px}
+.dupnote{flex:1 1 100%;color:var(--muted)}
+.dupline{margin:var(--sp2) 0 0;font-size:var(--fs-note);display:flex;flex-wrap:wrap;gap:var(--sp1) var(--sp3);align-items:center}
+.item.compact .dupline{flex:1 1 100%;margin:0}
+.jump{min-height:44px;border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:6px;font:inherit;font-size:var(--fs-note);padding:0 var(--sp3);cursor:pointer}
+details.bulk{background:var(--navy-l);border:2px solid var(--navy);border-radius:8px;padding:0;margin-bottom:var(--sp3);color:var(--navy-d)}
+details.bulk summary{cursor:pointer;min-height:44px;display:flex;align-items:center;gap:var(--sp3);padding:var(--sp2) var(--sp3);font-weight:700;color:var(--navy);list-style:none}
+details.bulk summary::-webkit-details-marker{display:none}
+details.bulk summary .bt{flex:none}
+details.bulk summary .bs2{flex:1 1 200px;font-weight:400;font-size:var(--fs-note);color:var(--navy-d)}
+details.bulk summary::after{content:'';flex:none;width:10px;height:10px;margin:0 var(--sp1) 4px auto;border-right:3px solid var(--navy);border-bottom:3px solid var(--navy);transform:rotate(45deg)}
+details.bulk[open] summary::after{transform:rotate(-135deg);margin-bottom:-4px}
+details.bulk[open] summary{border-bottom:1px solid #b8c8de}
+details.bulk .bulk-body{padding:var(--sp2) var(--sp3) var(--sp3)}
+.bulk-act{margin-top:var(--sp2)}
+dialog.bulk-dlg{width:min(720px,calc(100vw - 24px));max-width:none;max-height:calc(100vh - 24px);overflow:auto;padding:var(--sp4);border:2px solid var(--navy);border-radius:8px;background:#fff;color:var(--text)}
+dialog.bulk-dlg::backdrop{background:rgba(20,40,75,.5)}
+dialog.bulk-dlg h3{margin-top:0;word-break:break-word}
+.bulk-list{overflow:auto;max-height:40vh;min-height:96px;border:1px solid var(--ctl);border-radius:6px;padding:0 var(--sp3);margin:var(--sp2) 0}
+.bulk-row{border-bottom:1px solid var(--line);padding:var(--sp2) 0}
+.bulk-row:last-child{border-bottom:none}
+.bulk-row .bt{font-weight:700;word-break:break-word}
+.bulk-row .bs{font-size:var(--fs-note)}
+.chkrow{display:flex;gap:var(--sp3);align-items:center;font-weight:700;min-height:44px;margin:var(--sp2) 0 0}
+.chkrow input{width:24px;height:24px;flex:none}
+fieldset.interp{border:1px solid var(--ctl);border-radius:8px;margin:var(--sp3) 0;padding:var(--sp2) var(--sp3)}
+fieldset.interp legend{font-weight:700;color:var(--navy);padding:0 var(--sp1)}
+label.opt{display:flex;gap:var(--sp3);align-items:center;min-height:44px;margin:var(--sp1) 0;font-weight:400;cursor:pointer}
+label.opt input{width:24px;height:24px;flex:none}
+.pend{border:2px solid var(--navy);border-radius:8px;padding:var(--sp4);margin:var(--sp3) 0;background:#fff}
+.pend h3{margin-top:0;word-break:break-word}
+.pend h3:focus{outline:none}
+.pv-i{border:1px solid var(--line);border-left:6px solid var(--navy);border-radius:8px;padding:var(--sp2) var(--sp3);margin-bottom:var(--sp2)}
+.pv-t{word-break:break-word}
+.pv-n{font-size:var(--fs-note);color:var(--muted)}
+.pv-a{font-size:var(--fs-note);margin-top:var(--sp1);word-break:break-word}
+.itag{display:inline-block;font-weight:700;border:1px solid var(--navy);color:var(--navy);padding:0 var(--sp2);border-radius:4px}
+.itag.in,.itag.refund{border-color:var(--green);color:var(--green)}
+.itag.zero,.itag.unread{border-color:var(--orange);color:var(--orange)}
+.cnt{font-weight:700;word-break:break-word}
 dl.kv{display:grid;grid-template-columns:max-content 1fr;gap:var(--sp1) var(--sp4);margin:var(--sp2) 0}
 dl.kv dt{color:var(--muted)}dl.kv dd{margin:0;font-weight:700}
 .ok-t{color:var(--green)}.ng-t{color:var(--red)}
@@ -134,13 +196,19 @@ footer .disc{border:1px solid var(--line);background:#fff;border-radius:6px;padd
   table.res td::before{content:attr(data-l) "：";color:var(--muted);font-size:var(--fs-note)}
   details.det summary,details.fold summary{display:flex;align-items:center;min-height:44px}
   .bar progress{width:100%}
+  .item .r2{grid-template-columns:1fr}
+  details.bulk summary{flex-wrap:wrap}
+  details.bulk summary .bt{flex:1 1 0}
+  details.bulk summary .bs2{flex:1 1 100%;order:3}
+  details.bulk summary::after{margin-left:0}
+  .item .r2 .choice button{flex:1 1 0}
   dl.kv{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 <a class="skip" href="#app">本文へ移動</a>
-<header class="top"><div class="in"><h1>SHIWAKE NOTE</h1><p>副業のカード・銀行明細を整理するツール（処理はこのブラウザ内だけで行います）</p></div></header>
+<header class="top"><div class="in"><h1>SHIWAKE NOTE</h1><p>仕事・副業のカード・銀行明細を整理するツール（処理はこのブラウザ内だけで行います）</p></div></header>
 <main id="app" tabindex="-1"></main>
 <div id="live" class="sr" role="status" aria-live="polite"></div>
 <footer id="foot"></footer>
@@ -161,31 +229,48 @@ const TH = { BIZ_MIN:5, BIZ_PRIV_MAX:2, PRIV_MIN:4, PRIV_BIZ_MAX:2, W_BIZ:3, W_P
 const nfkc = s => String(s == null ? '' : s).normalize('NFKC');
 const pad2 = n => String(n).padStart(2, '0');
 const fmtYen = n => (n == null ? '' : n.toLocaleString('ja-JP'));
+// 画面表示専用の金額表記（入金・出金・返金を文字で示す）。元の表記（amountRaw）・内部の符号・方向・CSV出力は変えない
+function amountDisp(r){
+  if (r.amountSigned == null) return '金額不明';
+  const v = fmtYen(Math.abs(r.amountSigned)) + '円';
+  if (r.kind === 'refund') return '返金 ' + v;
+  if (r.direction === 'in') return '入金 ' + v;
+  if (r.direction === 'out') return '出金 ' + v;
+  return '方向不明 ' + v;
+}
 
 /* ---- 文字コード ---- */
 function decodeBytes(buf){
   let b = new Uint8Array(buf);
   if (b.length >= 3 && b[0] === 0xEF && b[1] === 0xBB && b[2] === 0xBF) b = b.subarray(3);
   try { return new TextDecoder('utf-8', { fatal:true }).decode(b); }
-  catch (e) { throw new Error('UTF-8として読み取れませんでした（UTF-8 / UTF-8 BOM付きのCSVに対応しています）。'); }
+  catch (e) { throw new Error('UTF-8として読み取れませんでした（UTF-8 / UTF-8 BOM付きのCSVに対応しています）。Shift_JIS など別の文字コードのCSVは読み込めません。Excelなどで「CSV UTF-8（コンマ区切り）」として保存し直してから、もう一度読み込んでください。'); }
 }
 
 /* ---- RFC4180 パーサ ---- */
-function parseCsv(text){
-  const rows = []; let row = [], f = '', q = false, i = 0; const n = text.length;
+const CSV_FIX = '誤った明細の結合や、金額・摘要の改変を避けるため、読み込みを中止しました。CSVを修正して、もう一度読み込んでください（項目の中にカンマや改行がある場合は、その項目を引用符（"）で囲みます）。';
+function parseCsv(text){   // RFC 4180。構造の異常（引用符の不整合）は、推測で読み進めず、行番号つきのエラーにする。rows.lines[i]＝i行目の行が、ファイルの何行目から始まるか
+  const rows = [], lines = []; let row = [], f = '', q = false, i = 0, line = 1, rowLine = 1, afterQ = false, fieldStart = true, qLine = 0; const n = text.length;
   while (i < n) {
     const c = text[i];
     if (q) {
-      if (c === '"') { if (text[i+1] === '"') { f += '"'; i += 2; continue; } q = false; i++; continue; }
+      if (c === '"') { if (text[i+1] === '"') { f += '"'; i += 2; continue; } q = false; afterQ = true; i++; continue; }
+      if (c === '\r' && text[i+1] === '\n') { f += '\r\n'; line++; i += 2; continue; }
+      if (c === '\r' || c === '\n') line++;
       f += c; i++; continue;
     }
-    if (c === '"' && f === '') { q = true; i++; continue; }
-    if (c === ',') { row.push(f); f = ''; i++; continue; }
-    if (c === '\r' || c === '\n') { if (c === '\r' && text[i+1] === '\n') i++; row.push(f); rows.push(row); row = []; f = ''; i++; continue; }
-    f += c; i++;
+    if (c === '"') {
+      if (fieldStart) { q = true; qLine = line; fieldStart = false; i++; continue; }
+      throw new Error(afterQ ? line + '行目：引用符（"）で囲まれた項目の直後に、さらに引用符があります（この項目は、' + qLine + '行目の引用符から始まっています）。' + CSV_FIX : line + '行目：引用符で囲まれていない項目の途中に、引用符（"）があります。' + CSV_FIX);
+    }
+    if (c === ',') { row.push(f); f = ''; fieldStart = true; afterQ = false; i++; continue; }
+    if (c === '\r' || c === '\n') { if (c === '\r' && text[i+1] === '\n') i++; row.push(f); rows.push(row); lines.push(rowLine); row = []; f = ''; fieldStart = true; afterQ = false; i++; line++; rowLine = line; continue; }
+    if (afterQ) throw new Error(line + '行目：引用符（"）で囲まれた項目の直後に、カンマ・改行以外の文字があります（この項目は、' + qLine + '行目の引用符から始まっています。引用符が閉じる位置が、ずれている可能性があります）。' + CSV_FIX);
+    f += c; fieldStart = false; i++;
   }
-  if (q) throw new Error('引用符（"）が閉じられていない行があります。');
-  if (f !== '' || row.length) { row.push(f); rows.push(row); }
+  if (q) throw new Error(qLine + '行目の引用符（"）が、ファイルの最後まで閉じられていません（引用符の閉じ忘れで、後ろの明細が結合されている可能性があります）。' + CSV_FIX);
+  if (f !== '' || row.length || afterQ) { row.push(f); rows.push(row); lines.push(rowLine); }
+  rows.lines = lines;
   return rows;
 }
 
@@ -215,7 +300,7 @@ function detectColumns(headerRow){
   else if (idx.amount >= 0 && idx.dirc >= 0) { format = 'B'; variant = '金額＋入出金区分の列'; }   // 入金・出金を区分列で明確に判定できる形式
   else if (idx.amount >= 0) format = 'A';
   if (!format || idx.date < 0 || idx.desc < 0) {
-    throw new Error('明細A（利用日／利用店名／利用金額…）または明細B（取引日／摘要／出金額／入金額…）の列を判別できません。検出した列名：' + (headerRow.map(h => '「' + h + '」').join('') || '（なし）'));
+    throw new Error('対応している列の組み合わせを判別できません。必要な列：日付（利用日・取引日など）、店名または摘要、金額（または出金額と入金額）。検出した列名：' + (headerRow.map(h => '「' + h + '」').join('') || '（なし）'));
   }
   return { format, idx, variant };
 }
@@ -229,18 +314,24 @@ function parseDate(raw){
   if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== mo-1 || dt.getUTCDate() !== d) return null;
   return y + '-' + pad2(mo) + '-' + pad2(d);
 }
-function parseAmount(raw){
+function parseAmount(raw){   // 正しい表記（桁区切りは3桁ごと、符号、¥・円）だけを数値にする。1,50 のような不正な桁区切り・数字の間の空白・安全な整数を超える値は、補正せず「読み取れない」とする
   let s = nfkc(raw).trim(); if (s === '') return { empty:true };
-  s = s.replace(/[¥円,\s]/g, ''); let neg = false;
-  if (/^\(.*\)$/.test(s)) { neg = true; s = s.slice(1, -1); }
-  if (/^[-−‐‑–—▲△]/.test(s)) { neg = true; s = s.slice(1); }
+  s = s.replace(/[¥円]/g, '').trim(); let neg = false;
+  if (/^\(.*\)$/.test(s)) { neg = true; s = s.slice(1, -1).trim(); }
+  if (/^\+/.test(s)) { if (neg) return { bad:true }; s = s.slice(1).trim(); }   // 先頭の「+」は、正の数。括弧との併用・符号の重複（+-5 など）は、読み取れない。「+」だけで、入金・出金は判断しない（向きは、形式の解釈で決める）
+  else if (/^[-−‐‑–—▲△]/.test(s)) { neg = true; s = s.slice(1).trim(); }
+  if (/\s/.test(s)) return { bad:true };
+  if (s.includes(',')) { if (!/^\d{1,3}(,\d{3})+$/.test(s)) return { bad:true }; s = s.replace(/,/g, ''); }
   if (!/^\d+$/.test(s)) return { bad:true };
-  return { value:parseInt(s, 10), neg };
+  const v = parseInt(s, 10); if (!Number.isSafeInteger(v)) return { bad:true };
+  return { value:v, neg };
 }
-function parseInstallments(raw){
-  const s = nfkc(raw).trim(); if (s === '') return null;
-  if (/^(一括|1回払い?)$/.test(s)) return 1;
-  const m = s.match(/^(\d+)回?$/); return m ? parseInt(m[1], 10) : null;
+function parseInstallments(raw){   // 意味が明確な表記だけを読む。一括・一括払い・1回・1回払い→1、N回・N回払い・分割N回・N分割・N→N。0回、リボ、ボーナス払いなど、回数を確定できない表記は null（読み取れない→要判断）
+  const s = nfkc(raw).replace(/\s+/g, ''); if (s === '') return null;
+  if (/^(一括払い?|一括)$/.test(s)) return 1;
+  const m = s.match(/^(?:分割(\d+)(?:回払い?|回)?|(\d+)(?:回払い?|回|分割)?)$/);
+  if (!m) return null;
+  const n = parseInt(m[1] || m[2], 10); return n >= 1 ? n : null;
 }
 const normDesc = s => nfkc(s).toLowerCase().replace(/[\s　]/g, '');
 const REFUND_RE = /返金|ヘンキン|取消|キャンセル/;
@@ -250,43 +341,120 @@ const DIR_OUT = ['出金','支出','引出','引出し','引き出し','払出',
 const DIR_IN  = ['入金','収入','預入','預入れ','お預入','お預入れ','返金','払戻','払戻し','クレジット','credit','入'];
 function dirOf(v){ const s = normDesc(v); if (DIR_OUT.includes(s)) return 'out'; if (DIR_IN.includes(s)) return 'in'; return null; }
 
-/* ---- 明細の読み込み（元データを全件保持） ---- */
-function parseStatement(text, fileName){
+/* ---- 形式の事前判定：金額が1列で、入出金の向きを列名から判断できないCSVは、利用者の選択が必要 ---- */
+const INTERP = {   // 選択肢（初期状態は未選択）。conv：残高の増減との照合に使う向き（+1＝プラスが入金／-1＝プラスが出金）
+  card:    { label: 'カード明細（マイナス＝返金）',  conv: -1 },
+  bankNeg: { label: '銀行明細（マイナス＝出金）',    conv: 1 },
+  bankPos: { label: '銀行明細（プラス＝出金）',      conv: -1 }
+};
+const INTERP_KEYS = ['card', 'bankNeg', 'bankPos'];
+const CARD_HEADERS = ['利用日','ご利用日','利用店名','ご利用店名','利用先','ご利用先','店名','利用金額','ご利用金額'].map(normHeader);
+const BAL_MIN_ROWS = 4;   // 残高との照合に必要な最小行数
+function analyzeBalance(rows, idx){   // 残高の増減が、金額の向きと整合するかを調べる（判定できないときはブロックしない）
+  if (idx.bal < 0) return { state: 'none', reason: '' };
+  const am = [], bl = []; let unread = 0;
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i]; if (r.every(c => String(c).trim() === '')) continue;
+    const a = parseAmount(idx.amount < r.length ? r[idx.amount] : ''), b = parseAmount(idx.bal < r.length ? r[idx.bal] : '');
+    if (a.empty || a.bad || b.empty || b.bad) { unread++; continue; }
+    am.push(a.neg ? -a.value : a.value); bl.push(b.neg ? -b.value : b.value);
+  }
+  if (unread) return { state: 'unknown', reason: '金額または残高を読み取れない行が' + unread + '件あるため、照合できません', rows: am.length };
+  if (am.length < BAL_MIN_ROWS) return { state: 'unknown', reason: '明細が' + BAL_MIN_ROWS + '行未満のため、照合できません', rows: am.length };
+  const hit = new Set();
+  for (const order of ['asc', 'desc']) for (const c of [1, -1]) {   // asc：古い順／desc：新しい順
+    let ok = true;
+    for (let i = 1; i < am.length && ok; i++) {
+      const d = order === 'asc' ? bl[i] - bl[i - 1] : bl[i - 1] - bl[i], a = order === 'asc' ? am[i] : am[i - 1];
+      if (d !== c * a) ok = false;
+    }
+    if (ok) hit.add(c);
+  }
+  if (hit.size === 1) return { state: 'unique', c: [...hit][0], rows: am.length };
+  if (hit.size === 0) return { state: 'unknown', reason: '残高の増減が、金額と連続して合わないため、照合できません', rows: am.length };
+  return { state: 'unknown', reason: '金額が同額などで、どちらの向きにも合うため、照合できません', rows: am.length };
+}
+// 選択肢ごとの照合結果。block：読み込み確定を無効にする（別の向きだけが全行で整合し、選択と明確に矛盾するときに限る）
+function balanceVerdict(bal, key, mixed){
+  if (!bal || bal.state === 'none') return { status: 'none', text: '', block: false };
+  if (bal.state === 'unknown') return { status: 'unknown', text: '判定できません（' + bal.reason + '）', block: false };
+  if (INTERP[key].conv === bal.c) return { status: 'match', text: '一致', block: false };
+  const other = INTERP_KEYS.filter(k => INTERP[k].conv === bal.c).map(k => INTERP[k].label).join('または');
+  return { status: 'mismatch', text: '不一致（残高の増減は、' + other + 'の向きと一致します）', block: !mixed };
+}
+
+/* ---- 明細の読み込み（元データを全件保持）---- */
+function prepareStatement(text, fileName){   // 形式の判定まで。選択が必要な場合は needsChoice を返し、まだ明細を作らない
   const rows = parseCsv(text);
-  if (!rows.length) throw new Error('ファイルが空です。');
+  if (!rows.length) throw new Error('ファイルが空です。明細の行を含むCSVを選んでください。');
   let { format, idx, variant } = detectColumns(rows[0]);
+  const width = rows[0].length, ragged = [];   // 列数が見出しと異なる行：明細の列の対応を確定できないため、補完も無視もせず、読み込みを中止する
+  let dataRows = 0;
+  for (let i = 1; i < rows.length; i++) { const r = rows[i]; if (r.every(c => String(c).trim() === '')) continue; dataRows++; if (r.length !== width) ragged.push({ ln: rows.lines[i], n: r.length }); }
+  if (ragged.length) throw new Error('列数が見出し（' + width + '列）と異なる行が' + ragged.length + '行あります（' + ragged.slice(0, 3).map(x => x.ln + '行目：' + x.n + '列').join('、') + (ragged.length > 3 ? ' ほか' : '') + '）。列の対応を確定できないため、列を補ったり無視したりせず、読み込みを中止しました。金額の桁区切り（1,000 など）が引用符で囲まれていない、列が足りない・余分にあるなどの可能性があります。CSVを修正して、もう一度読み込んでください。');
+  if (!dataRows) throw new Error('読み込める明細がありません（見出しの行だけ、または空行だけのCSVです）。明細の行を含むCSVを選んでください。');
   if (format === 'A' && idx.dirLoose >= 0) {   // 「区分」「種別」の列：値がすべて入金・出金と読めるときだけ入出金区分として扱う。まったく読めなければ無視し、一部だけ読める場合は誤読を避けて中止する
     let mapped = 0, other = 0;
     for (let i = 1; i < rows.length; i++) { const r = rows[i]; if (r.every(c => String(c).trim() === '')) continue; const v = String(idx.dirLoose < r.length ? r[idx.dirLoose] : '').trim(); if (v === '') continue; if (dirOf(v)) mapped++; else other++; }
     if (mapped > 0 && other === 0) { format = 'B'; variant = '金額＋入出金区分の列'; idx.dirc = idx.dirLoose; }
     else if (mapped > 0 && other > 0) throw new Error('「' + rows[0][idx.dirLoose] + '」列に、入金・出金と読める値と、そうでない値が混在しています。誤った仕分けを避けるため、読み込みを中止しました。出金額／入金額の列がある形式、または「入金」「出金」で統一された区分の列があるCSVを使用してください。');
   }
-  const records = []; let blank = 0; const cell = (r, k) => (idx[k] >= 0 && idx[k] < r.length ? r[idx[k]] : '');
+  const cell = (r, k) => (idx[k] >= 0 && idx[k] < r.length ? r[idx[k]] : '');
   if (variant) {   // 入出金区分の列：判定できない値が1行でもあれば、誤った仕分けを続けずに中止する
     const bad = [];
     for (let i = 1; i < rows.length; i++) { const r = rows[i]; if (r.every(c => String(c).trim() === '')) continue; if (!dirOf(cell(r, 'dirc'))) bad.push((i + 1) + '行目：' + (String(cell(r, 'dirc')).trim() === '' ? '（空欄）' : '「' + String(cell(r, 'dirc')).trim().slice(0, 20) + '」')); }
     if (bad.length) throw new Error('「' + rows[0][idx.dirc] + '」列の値から、入金・出金を判定できない行が' + bad.length + '件あります（' + bad.slice(0, 3).join('、') + (bad.length > 3 ? ' ほか' : '') + '）。誤った仕分けを避けるため、読み込みを中止しました。出金額／入金額の列がある形式、または「入金」「出金」と読める区分の列があるCSVを使用してください。');
   }
+  let choice = null;
+  if (format === 'A' && !variant) {   // 金額が1列で、入出金区分の列がない：カード専用の列名があり、残高がなければ、従来どおりカード形式。それ以外は利用者が選ぶ
+    const card = rows[0].map(normHeader).some(x => CARD_HEADERS.includes(x)) || idx.inst >= 0, hasBal = idx.bal >= 0;
+    if (!card || hasBal) {
+      let readable = 0;
+      for (let i = 1; i < rows.length; i++) { const r = rows[i]; if (r.every(c => String(c).trim() === '')) continue; const a = parseAmount(cell(r, 'amount')); if (!a.empty && !a.bad) readable++; }
+      if (!readable) throw new Error('金額の列「' + rows[0][idx.amount] + '」に、読み取れる金額が1件もありません。金額が数字（カンマ・円記号・マイナス記号は可）で入力されているか確認してください。');
+      const amtName = '「' + rows[0][idx.amount] + '」';
+      choice = { mixed: card && hasBal, hasBal, balance: analyzeBalance(rows, idx),
+        why: card && hasBal ? 'カード明細に使われる列名と「' + rows[0][idx.bal] + '」の列が両方あり、金額の列' + amtName + 'のマイナスが返金か出金かを、列名だけでは判断できません。'
+          : hasBal ? '「' + rows[0][idx.bal] + '」の列があり、銀行の明細の可能性がありますが、金額の列' + amtName + 'のマイナスが出金か返金かを、列名だけでは判断できません。'
+          : '列名から、カードの明細か銀行の明細かを判断できません。金額の列' + amtName + 'のマイナスが返金か出金かが、決まらない状態です。' };
+    }
+  }
+  return { rows, format, idx, variant, fileName, choice, needsChoice: !!choice };
+}
+function buildStatement(prep, interp){   // 解釈（選択肢）を指定して、明細を作る。選択が不要な形式では、interp は無視する
+  const { rows, idx, variant, fileName } = prep; let format = prep.format;
+  let mode = null;
+  if (prep.needsChoice) { if (!INTERP[interp]) throw new Error('形式が選択されていません。'); mode = interp; if (mode !== 'card') format = 'B'; }
+  const records = []; let blank = 0; const cell = (r, k) => (idx[k] >= 0 && idx[k] < r.length ? r[idx[k]] : '');
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
     if (r.every(c => String(c).trim() === '')) { blank++; continue; }
     const rec = { id: records.length + 1, source: format, rowNo: i + 1, raw: r.slice(), warnings: [],
       dateRaw: cell(r,'date'), desc: cell(r,'desc'), noteRaw: cell(r,'note'),
       date: null, descNorm: normDesc(cell(r,'desc')), amountSigned: null, direction: 'unknown', kind: 'unknown',
-      amountRaw: '', instColumn: true, installments: null, dup: 0, toolCategory: null, reason: '', finalCategory: null, reclassFrom: null, refund: null };
+      amountRaw: '', instColumn: true, installments: null, dup: 0, dupGroup: 0, dupStatus: '', lastEdit: 0, toolCategory: null, reason: '', csvReason: '', finalCategory: null, reclassFrom: null, refund: null };
     if (r.length !== rows[0].length) rec.warnings.push('列数がヘッダーと異なります（' + r.length + '列）。読み取れた範囲で保持しました。');
     rec.date = parseDate(rec.dateRaw);
     if (!rec.date) rec.warnings.push('日付を読み取れません（原文のまま保持）。');
     if (format === 'A') {
-      rec.amountRaw = cell(r,'amount');   // 出力CSVには、元の表記をそのまま使う（数値の解析は内部の判定用）
+      rec.amountRaw = cell(r,'amount'); rec.amountCol = idx.amount;   // 出力CSVには、元の表記をそのまま使う（数値の解析は内部の判定用）。amountCol：元の行（rec.raw）の、金額の列（出力後の照合の比較元）
       const a = parseAmount(rec.amountRaw);
       if (a.empty || a.bad) rec.warnings.push('金額を読み取れません。');
       else { rec.amountSigned = a.neg ? -a.value : a.value; rec.direction = rec.amountSigned < 0 ? 'in' : 'out'; }
       rec.instColumn = idx.inst >= 0;   // 支払回数の列が無いCSVでは、分割払いの判定を行わない
       if (rec.instColumn) { rec.installments = parseInstallments(cell(r,'inst')); if (rec.installments == null) rec.warnings.push('支払回数を読み取れません。'); }
       rec.kind = rec.direction === 'in' ? 'refund' : (rec.direction === 'out' ? 'purchase' : 'unknown');
+    } else if (mode) {   // 銀行明細として選択された、金額が1列のCSV（支払回数による分割払いの判定は行わない）
+      rec.amountRaw = cell(r,'amount'); rec.amountCol = idx.amount; rec.instColumn = false;
+      const a = parseAmount(rec.amountRaw);
+      if (a.empty || a.bad) rec.warnings.push('金額を読み取れません。');
+      else {
+        const isOut = a.value === 0 ? true : (mode === 'bankNeg' ? a.neg : !a.neg);
+        if (a.value === 0) rec.warnings.push('金額が0です。出金として扱いました。');
+        rec.direction = isOut ? 'out' : 'in'; rec.amountSigned = isOut ? a.value : -a.value; rec.kind = isOut ? 'purchase' : inKind(rec.descNorm);
+      }
     } else if (variant) {
-      rec.amountRaw = cell(r,'amount');
+      rec.amountRaw = cell(r,'amount'); rec.amountCol = idx.amount;
       const a = parseAmount(rec.amountRaw), d = dirOf(cell(r,'dirc'));
       if (a.empty || a.bad) rec.warnings.push('金額を読み取れません。');
       else {
@@ -294,7 +462,7 @@ function parseStatement(text, fileName){
         rec.direction = d; rec.amountSigned = d === 'in' ? -a.value : a.value; rec.kind = d === 'in' ? inKind(rec.descNorm) : 'purchase';
       }
     } else {
-      const oRaw = cell(r,'out'), nRaw = cell(r,'inn'); rec.amountRaw = String(oRaw).trim() !== '' ? oRaw : nRaw;   // 出力CSVには、入金額も元の値のまま使う
+      const oRaw = cell(r,'out'), nRaw = cell(r,'inn'); rec.amountRaw = String(oRaw).trim() !== '' ? oRaw : nRaw; rec.amountCol = String(oRaw).trim() !== '' ? idx.out : idx.inn;   // 出力CSVには、入金額も元の値のまま使う
       const o = parseAmount(oRaw), n = parseAmount(nRaw);
       const oOk = !o.empty && !o.bad && !o.neg, nOk = !n.empty && !n.bad && !n.neg;
       if ((o.bad || n.bad) || (o.neg || n.neg)) rec.warnings.push('出金額または入金額を読み取れません。');
@@ -306,13 +474,28 @@ function parseStatement(text, fileName){
     records.push(rec);
   }
   markDuplicates(records);
-  return { format, records, stats: { fileName, totalRows: rows.length - 1, read: records.length, blank, variant } };
+  return { format, records, stats: { fileName, totalRows: rows.length - 1, read: records.length, blank, variant, chosen: mode } };
+}
+function parseStatement(text, fileName, interp){   // 形式が明確なCSVは、従来どおり1段階で読み込む。選択が必要なCSVは interp（INTERP のキー）が無いと、読み込まない
+  const prep = prepareStatement(text, fileName);
+  if (prep.needsChoice && !interp) { const e = new Error('このCSVは、形式（カード明細／銀行明細）を選択する必要があります。'); e.needChoice = true; throw e; }
+  return buildStatement(prep, interp);
+}
+function previewStatement(prep, interp){   // 選択した形式での、先頭5行の解釈と、全件の内訳（確定前の表示用。明細は確定しない）
+  const res = buildStatement(prep, interp); const cnt = { out: 0, in: 0, refund: 0, zero: 0, unread: 0 };
+  const lab = r => r.amountSigned == null ? 'unread' : (r.amountSigned === 0 ? 'zero' : (r.direction === 'out' ? 'out' : (r.kind === 'refund' ? 'refund' : 'in')));
+  res.records.forEach(r => { cnt[lab(r)]++; });
+  return { total: res.records.length, cnt, head: res.records.slice(0, 5).map(r => ({ rowNo: r.rowNo, dateRaw: r.dateRaw, desc: r.desc, amountRaw: r.amountRaw, label: lab(r) })) };
 }
 function markDuplicates(records){
   const m = new Map();
-  records.forEach(r => { const k = (r.date || nfkc(r.dateRaw)) + '|' + r.descNorm + '|' + r.amountSigned; (m.get(k) || m.set(k, []).get(k)).push(r); });
-  records.forEach(r => r.dup = 0);
-  m.forEach(g => { if (g.length > 1) g.forEach(r => r.dup = g.length - 1); });
+  records.forEach(r => {
+    const amt = r.amountSigned != null ? String(r.amountSigned) : 'raw:' + nfkc(r.amountRaw).trim();
+    const k = (r.date || nfkc(r.dateRaw)) + '|' + r.descNorm + '|' + amt; (m.get(k) || m.set(k, []).get(k)).push(r);
+  });
+  records.forEach(r => { r.dup = 0; r.dupGroup = 0; r.dupStatus = ''; });
+  let gid = 0;   // 同じ内容の明細を1組とし、組の番号（出現順）を付ける。明細は削除しない
+  m.forEach(g => { if (g.length > 1) { gid++; g.forEach(r => { r.dup = g.length - 1; r.dupGroup = gid; r.dupStatus = 'unconfirmed'; }); } });   // 重複確認の状態は、本人が設定するまで「未確認」。事業／私用の最終区分とは別に持つ
 }
 
 /* ---- 仕分けルール（辞書）---- */
@@ -325,15 +508,15 @@ const RULES_BIZ = [
   { label:'クラウドサーバー', re:/サーバー/, ascii:['vps'], not:/ウォーターサーバー|ゲームサーバー|ビールサーバー/,
     pw:['クラウドサーバー','クラウド','レンタルサーバー','サーバー','VPS','ホスティング'] },
   { label:'コワーキング',     re:/コワーキング|シェアオフィス|レンタルオフィス/, pw:['コワーキング','シェアオフィス','レンタルオフィス'] },
-  { label:'文章校正ツール',   re:/校正|校閲|ヨミナオシ/, pw:['文章校正','校正','校閲'] },
-  { label:'画像素材',         re:/画像素材|イメージソザイ|ピクセルバンク|ストックフォト|フリー素材/, pw:['画像素材','写真素材','フリー素材','ストックフォト'] },
+  { label:'文章校正ツール',   re:/校正|校閲/, pw:['文章校正','校正','校閲'] },
+  { label:'画像素材',         re:/画像素材|イメージソザイ|ストックフォト|フリー素材/, pw:['画像素材','写真素材','フリー素材','ストックフォト'] },
   { label:'ドメイン管理',     re:/ドメイン/, pw:['独自ドメイン','ドメイン'] },
   { label:'取材用の機材',     re:/icレコーダー|ボイスレコーダー|取材/, pw:['取材','インタビュー','ICレコーダー','ボイスレコーダー'] }
 ];
 const RULES_BOTH = [
   { label:'AIサービス',       re:/エーアイ|chatgpt|チャットジーピーティー/, ascii:['ai'], pw:['AIアシスト','生成AI','AIツール','ChatGPT','AI'] },
   { label:'書籍・書店',       re:/書籍|書店|ブックストア|雑誌|ギジュツショ|技術書/, pw:['技術書','電子書籍','参考資料','書籍'] },
-  { label:'通信・携帯関連',   re:/通信|回線|カイセン|携帯|ケーブル|デンワ|ツウワ|ひかりモバイル/, pw:['自宅','在宅'] },
+  { label:'通信・携帯関連',   re:/通信|回線|カイセン|携帯|ケーブル|デンワ|ツウワ/, pw:['自宅','在宅'] },
   { label:'交通系ICチャージ', re:/交通系ic|icチャージ|suica|パスモ/, pw:['電車','取材'] },
   { label:'家賃・光熱費',     re:/ヤチン|家賃|デンキダイ|電気代|水道|スイドウ/, pw:['自宅','在宅'] },
   { label:'飲食（カフェ・ランチ）', re:/カフェ|コーヒー|ランチ|定食/, pw:['取材'] },
@@ -349,8 +532,8 @@ const RULES_PRIV = [
   { label:'飲酒を伴う飲食',   re:/居酒屋|イザカヤ/, pw:['接待','居酒屋'] },
   { label:'娯楽',             re:/シネマ|映画|マンガキッサ|漫画|おもちゃ|オモチャ|トイズ/, pw:['映画','漫画','マンガ','ゲーム','玩具','おもちゃ'] },
   { label:'美容・衛生用品',   re:/美容室|ビヨウシツ|理容|クリーニング|クリーニンク|ドラッグ/, pw:['美容','理容','ヘアメイク','クリーニング','衣装'] },
-  { label:'医療・ペット',     re:/病院|クリニック|イリョウヒ|ペット|ポチたま|ポチタマ/, not:/ペットボトル/, pw:['ペット','動物','獣医','医療','介護','ヘルスケア'] },
-  { label:'フィットネス',     re:/フィットネス|ジム/, not:/ジムニー|ジムビーム/, pw:['フィットネス','トレーナー','ジム','スポーツ'] },
+  { label:'医療・ペット',     re:/病院|クリニック|イリョウヒ|ペット/, not:/ペットボトル/, pw:['ペット','動物','獣医','医療','介護','ヘルスケア'] },
+  { label:'フィットネス',     re:/フィットネス|ジム/, not:/ジムニー|ジムビーム|ジム(?:ショ(?!ップ)|ヨウ|キ(?!ッズ|ック)|イン|テキ|キョク|シツ|テスウ|ドウグ|チョウ|ギョウム|ダイコウ|タントウ|ショリ|カンリ)/, pw:['フィットネス','トレーナー','ジム','スポーツ'] },
   { label:'保険',             re:/保険|ホケン|損保/, pw:['保険','営業車','運送','配送','車両'] },
   { label:'ベビー用品',       re:/ベビー/, pw:['育児','ベビー','子育て','キッズ'] }
 ];
@@ -373,9 +556,9 @@ function boundaryFind(str, w){
 function descForms(raw){ return { s: nfkc(raw).toLowerCase().replace(/\s+/g, ' ').trim(), ns: normDesc(raw), orig: nfkc(raw) }; }
 // 英数字の語は、摘要に実際にある大文字小文字のまま取り出す（見つからなければ正規化後の語）
 function recoverAscii(orig, w){ const m = new RegExp('(^|[^A-Za-z0-9])(' + w + ')(?![A-Za-z0-9])', 'i').exec(orig); return m ? m[2] : w; }
-function ruleMatch(rule, d){
-  if (rule.not && rule.not.test(d.ns)) return null;
-  if (rule.re) { const m = rule.re.exec(d.ns); if (m) return m[0]; }
+function ruleMatch(rule, d){   // not：除外パターン。一致した部分だけを照合から取り除く（同じ摘要の、別の部分の有効な一致は、そのまま生かす）
+  const ns = rule.not ? d.ns.replace(new RegExp(rule.not.source, 'g'), '\u0001') : d.ns;
+  if (rule.re) { const m = rule.re.exec(ns); if (m) return m[0]; }
   for (const w of (rule.ascii || [])) { if (boundaryFind(d.s, w) >= 0 || boundaryFind(d.ns, w) >= 0) return recoverAscii(d.orig || '', w); }
   return null;
 }
@@ -384,39 +567,48 @@ function ruleMatch(rule, d){
 // 明確な否定表現だけを除外の対象とする。単なる「ない」「以前」では除外しない
 const NEG_RE = /使わ(ない|ず)|使いません|使っていな|使っておらず|使用しな|使用していな|利用しな|利用していな|契約しな|契約していな|購入しな|購入していな|持っていな|持たない|受け取らな|受け取っていな|行わな|行っていな|運営しな|運営していな|必要ない|必要としな|不要|ません|ていない|ておらず|しない|なし$/;
 const DOUBLE_NEG_RE = /わけではない|ことはない|なくはない|ないではない|ないでもない|なくもない|ないとは(限|言)/;
-const CONTRAST_RE = /ないが|ませんが|けれど|けど|ものの|一方|ただし|しかし|以前|かつて|昔|今は|いまは|現在は|最近は|今後|将来|予定|検討|やめ/;
+const CONTRAST_RE = /ないが|ませんが|けれど|けど|ものの|一方|ただし|しかし|今は|いまは|現在は|最近は/;   // 否定を含む文で、対比を示す語（文全体で判定）。時制の語は、下の TENSE_RE（節ごと）で扱う
+// 時制の表現（過去・終了・予定）。現在の利用を示す根拠にしない。節（読点・「が」「けど」などで区切った単位）ごとに判定する。文字列（正規表現）による判定で、自然言語の完全な理解ではない
+const CURRENT_RE = /以前から|昔から|前から|かつてから|ずっと|引き続き|現在も|今も|いまも|今でも|いまでも|継続して/g;   // 現在まで続いていることを示す表現（時制の語として数えない）
+const TENSE_RE = /以前|かつて|昔|前は|過去|ていた|ていました|ておりました|だった|でした|解約|退会|やめた|やめました|やめて|辞めた|辞めました|終了|廃止|閉鎖|休止|解除|停止|使わなくなった|利用しなくなった|なくなった|乗り換|乗換|手放|予定|検討|考え中|つもり|今後|将来|そのうち|いずれ|(?:し|使い|始め|導入し|契約し|利用し)たい|始める|始めよう/;
+const BARE_ADV_RE = /^(?:以前は?|かつては?|昔は?|今後は?|将来は?|いずれは?|そのうち)$/;   // 節が時制の副詞だけ：後ろの節にかかる
+const CLAUSE_PRED_RE = /(?:て|で|た|だ|る|い|す|ん|ず)$/;   // 節が述語で終わる：後ろの節の述語を借りない（語を並べただけの節は、後ろの述語がかかる）
+const hasTense = s => TENSE_RE.test(s.replace(CURRENT_RE, ''));
+const splitClauses = seg => seg.replace(/([たいるすんず])(?:けれども|けれど|けど|ものの|が)/g, '$1\u0001').split('\u0001');
 const RELATION_RE = /副業|仕事|業務|事業|制作|販売|取材|撮影|作業|のため|として|に使う|を使う|で使う|使用|利用|扱う|取り扱|運営|活動|紹介|レビュー|執筆/;
 function analyzeProfile(profile){
   const sentences = [];
   ['content','tools','place','other'].forEach(f => String(profile[f] || '').split(/[。！？!?\n\r]+/).forEach(t => {
     if (t.trim() === '') return;
     const ns = normDesc(t);
-    sentences.push({ field: f, s: nfkc(t).toLowerCase().replace(/\s+/g, ' ').trim(), ns, segs: ns.split(/[、,，]/) });
+    const segs = ns.split(/[、,，]/);
+    sentences.push({ field: f, s: nfkc(t).toLowerCase().replace(/\s+/g, ' ').trim(), ns, segs, clauses: segs.flatMap(splitClauses).map(c => ({ s: c, neg: NEG_RE.test(c), tense: hasTense(c) })) });
   }));
   return { sentences };
 }
-// 'match'（肯定）／'negated'（明確な否定）／'ambiguous'（二重否定・対比・本業との対比など、自動判定しない）
+// 'match'（肯定）／'negated'（明確な否定）／'ambiguous'（二重否定・対比・本業との対比など、自動判定しない）／'ambiguous_t'（過去・解約・予定の表現があり、現在の利用か判断できない）
 function judgeSentence(st, wl){
-  const t = st.ns;
+  const t = st.ns, cl = st.clauses;
   if (/本業/.test(t) || DOUBLE_NEG_RE.test(t)) return 'ambiguous';
-  const negIn = st.segs.map(g => NEG_RE.test(g));
-  if (!negIn.some(Boolean)) return 'match';
-  if (CONTRAST_RE.test(t)) return 'ambiguous';
-  const k = st.segs.findIndex(g => boundaryFind(g, wl) >= 0);
+  if (!cl.some(c => c.neg) && !cl.some(c => c.tense)) return 'match';
+  if (cl.some(c => c.neg) && CONTRAST_RE.test(t)) return 'ambiguous';
+  const k = cl.findIndex(c => boundaryFind(c.s, wl) >= 0);
   if (k < 0) return 'ambiguous';
-  if (negIn[k]) return 'negated';
-  return negIn.slice(k + 1).some(Boolean) ? 'ambiguous' : 'match';
+  const later = cl.slice(k + 1), borrow = !CLAUSE_PRED_RE.test(cl[k].s);   // borrow：その節が、語を並べただけで、述語を後ろの節から借りる
+  if (cl[k].tense || (borrow && later.some(c => c.tense)) || cl.slice(0, k).some(c => BARE_ADV_RE.test(c.s))) return 'ambiguous_t';
+  if (cl[k].neg) return 'negated';
+  return (borrow && later.some(c => c.neg)) ? 'ambiguous' : 'match';
 }
 function lookup(PA, aliases){
   const r = { matches: [], negated: [], ambiguous: [] };
   for (const st of PA.sentences) for (const w of aliases) {
     const wl = normDesc(w); if (boundaryFind(st.s, wl) < 0 && boundaryFind(st.ns, wl) < 0) continue;
-    const k = judgeSentence(st, wl); r[k === 'match' ? 'matches' : k].push({ word: w, st }); break;
+    const k = judgeSentence(st, wl); r[k === 'match' ? 'matches' : (k === 'ambiguous_t' ? 'ambiguous' : k)].push({ word: w, st, t: k === 'ambiguous_t' }); break;
   }
   return r;
 }
 function sumBiz(l){
-  if (l.ambiguous.length || (l.matches.length && l.negated.length)) return { status:'ambiguous', word:(l.ambiguous[0] || l.matches[0]).word };
+  if (l.ambiguous.length || (l.matches.length && l.negated.length)) return { status:'ambiguous', word:(l.ambiguous[0] || l.matches[0]).word, temporal: l.ambiguous.length > 0 && l.ambiguous.every(x => x.t) };
   if (l.matches.length) return { status:'match', word:l.matches[0].word };
   if (l.negated.length) return { status:'negated', word:l.negated[0].word };
   return { status:'none' };
@@ -425,7 +617,7 @@ function sumBiz(l){
 const isPositive = it => it.st.field === 'content' || it.st.field === 'tools' || RELATION_RE.test(it.st.ns);
 function sumPriv(l){
   const pos = l.matches.filter(isPositive);
-  if (l.ambiguous.length || (pos.length && l.negated.length)) return { status:'ambiguous', word:(l.ambiguous[0] || pos[0]).word };
+  if (l.ambiguous.length || (pos.length && l.negated.length)) return { status:'ambiguous', word:(l.ambiguous[0] || pos[0]).word, temporal: l.ambiguous.length > 0 && l.ambiguous.every(x => x.t) };
   if (pos.length) return { status:'positive', word:pos[0].word };
   if (l.negated.length) return { status:'negated', word:l.negated[0].word };
   if (l.matches.length) return { status:'mention', word:l.matches[0].word };
@@ -453,6 +645,8 @@ const dispDate = r => r.dateRaw;
 
 /* ---- 仕分け本体（理由には、実際に一致した語と照合結果だけを書く）---- */
 const q = s => '「' + s + '」';
+const ambNote = pr => 'プロフィールの' + q(pr.word) + (pr.temporal ? 'を含む記述に、過去・解約・予定を示す表現があり、現在の利用かどうかを、機械的に判断できませんでした。' : 'を含む記述は否定や対比を含み、機械的に判断できませんでした。');
+const ambSum = pr => pr.temporal ? 'を含むが、プロフィールに過去・解約・予定の記述があり判断できない' : 'を含むが、プロフィールの記述が否定・対比で判断できない';
 const normNote = (raw, hits) => hits.some(h => !raw.includes(h.m)) ? '（一致語は半角・全角や大文字小文字を統一した表記で示しています）' : '';
 const hitTxt = h => q(h.m) + '（' + h.label + '）';
 const listWords = pw => pw.slice(0, 4).map(q).join('') + (pw.length > 4 ? 'など' : '');
@@ -460,14 +654,14 @@ function profNoteBoth(h){
   switch (h.prof.status) {
     case 'match': return 'プロフィールの' + q(h.prof.word) + 'とも関係し得ますが、';
     case 'negated': return 'プロフィールには' + q(h.prof.word) + 'を仕事で使わない旨の記述があります。';
-    case 'ambiguous': return 'プロフィールの' + q(h.prof.word) + 'を含む記述は否定や対比を含み、機械的に判断できませんでした。';
+    case 'ambiguous': return ambNote(h.prof);
     default: return '';
   }
 }
 function profNoteBiz(h){
   switch (h.prof.status) {
     case 'negated': return 'プロフィールの' + q(h.prof.word) + 'は使わない旨の記述があるため、関連するものとして扱っていません。';
-    case 'ambiguous': return 'プロフィールの' + q(h.prof.word) + 'を含む記述は否定や対比を含み、機械的に判断できませんでした。';
+    case 'ambiguous': return ambNote(h.prof);
     default: return 'プロフィールに、対応する記載（' + listWords(h.pw) + '）は見つかりませんでした。';
   }
 }
@@ -478,8 +672,15 @@ function profSum(h){
     default: return 'プロフィールに対応する記載なし';
   }
 }
+/* ---- CSV用の理由文：同じ行の摘要の全文は書かず、一致語・分類の根拠・プロフィールとの関連を、既存の判定結果から組み立てる（画面用の理由文とは別に生成する）---- */
+const hitC = h => h.m === h.label ? q(h.m) : hitTxt(h);   // 一致語とラベルが同じときは、重複して書かない
+function matchSentence(hits){   // プロフィールと一致した語：一致語とプロフィールの語が同じなら「プロフィールの記載」、異なるなら両方を示す
+  const same = hits.every(x => x.m === x.prof.word);
+  return same ? hits.map(x => q(x.m)).join('') + 'がプロフィールの記載と一致しているため、'
+    : hits.map(hitC).join('') + 'を含み、プロフィールの' + hits.map(x => q(x.prof.word)).join('') + 'の記載と一致しているため、';
+}
 function classifyOne(r, PA, all){
-  const d = descForms(r.desc), raw = r.desc.trim(); let cat, why, sum;
+  const d = descForms(r.desc), raw = r.desc.trim(); let cat, why, sum, cwhy;
   if (r.direction === 'in') {
     if (r.kind === 'refund') {
       cat = CAT.CHK; r.refund = findOriginal(r, all);
@@ -488,14 +689,16 @@ function classifyOne(r, PA, all){
         ? '元の明細（' + dispDate(r.refund) + q(r.refund.desc.trim()) + fmtYen(r.refund.amountSigned) + '円・元データ' + r.refund.rowNo + '行目）に対応するとみられます。元の明細が事業か私用かを確認し、同じ区分で確定してください。'
         : '対応する元の明細を特定できませんでした。内容を確認して区分を選んでください。');
       sum = r.refund ? '返金とみられる明細（元：' + dispDate(r.refund) + '）' : '返金とみられる明細（元の明細を特定できず）';
+      cwhy = why;   // 元の明細（別の明細）を特定する情報は、そのまま残す
     } else if (r.kind === 'interest') {
       const m = /利息|リソク/.exec(r.descNorm);
       cat = CAT.PRIV; why = '入金の摘要' + q(raw) + 'に' + q(m ? m[0] : '利息') + 'を含み、預金の利息とみられます。副業の取引とは別のものである可能性があります。' + normNote(raw, [{ m: m ? m[0] : '' }]); sum = '預金の利息とみられる少額の入金';
+      cwhy = '入金の明細で、' + q(m ? m[0] : '利息') + 'を含み、預金の利息とみられます。仕事・副業の取引とは別のものである可能性があります。';
     } else {
       const hs = collectHits(RULES_INCOME, d, PA, sumBiz); const hit = hs.find(h => h.prof.status === 'match');
-      if (hit) { cat = CAT.BIZ; why = '入金の摘要' + q(raw) + 'に' + hitTxt(hit) + 'を含み、プロフィールの' + q(hit.prof.word) + 'の記載と一致しています。副業の収入に関係する可能性があります。' + normNote(raw, [hit]); sum = q(hit.m) + 'を含み、プロフィールの' + q(hit.prof.word) + 'と一致'; }
-      else if (hs.length) { cat = CAT.CHK; why = '入金の摘要' + q(raw) + 'に' + hitTxt(hs[0]) + 'を含みますが、' + profNoteBiz(hs[0]) + '判断が必要です。' + normNote(raw, hs); sum = q(hs[0].m) + 'を含むが、' + profSum(hs[0]); }
-      else { cat = CAT.CHK; why = '入金の摘要' + q(raw) + 'には、内容を示す語として登録している語（報酬・売上・利息・返金など）が含まれていませんでした。判断が必要です。'; sum = '内容を示す語が見つからない入金'; }
+      if (hit) { cat = CAT.BIZ; why = '入金の摘要' + q(raw) + 'に' + hitTxt(hit) + 'を含み、プロフィールの' + q(hit.prof.word) + 'の記載と一致しています。副業の収入に関係する可能性があります。' + normNote(raw, [hit]); sum = q(hit.m) + 'を含み、プロフィールの' + q(hit.prof.word) + 'と一致'; cwhy = '入金の明細で、' + matchSentence([hit]) + '仕事・副業の収入に関係する可能性があります。'; }
+      else if (hs.length) { cat = CAT.CHK; why = '入金の摘要' + q(raw) + 'に' + hitTxt(hs[0]) + 'を含みますが、' + profNoteBiz(hs[0]) + '判断が必要です。' + normNote(raw, hs); sum = q(hs[0].m) + 'を含むが、' + profSum(hs[0]); cwhy = '入金の明細で、' + hitC(hs[0]) + 'を含みますが、' + profNoteBiz(hs[0]) + '判断が必要です。'; }
+      else { cat = CAT.CHK; why = '入金の摘要' + q(raw) + 'には、内容を示す語として登録している語（報酬・売上・利息・返金など）が含まれていませんでした。判断が必要です。'; sum = '内容を示す語が見つからない入金'; cwhy = '入金の明細ですが、内容を示す語として登録している語（報酬・売上・利息・返金など）が含まれていませんでした。判断が必要です。'; }
     }
   } else {
     const biz = collectHits(RULES_BIZ, d, PA, sumBiz), both = collectHits(RULES_BOTH, d, PA, sumBiz), priv = collectHits(RULES_PRIV, d, PA, sumPriv);
@@ -509,23 +712,26 @@ function classifyOne(r, PA, all){
       else if (r.installments >= 2) { forced.push('支払回数が' + r.installments + '回の分割払いのため、判断が必要です。'); forcedS.push(r.installments + '回の分割払い'); }
     }
     const bizAmb = biz.find(x => x.prof.status === 'ambiguous');
-    if (forced.length) { cat = CAT.CHK; why = forced.join(''); sum = forcedS.join('／'); }
+    if (forced.length) { cat = CAT.CHK; why = forced.join(''); sum = forcedS.join('／'); cwhy = why; }
     else if (both.length) {
       cat = CAT.CHK;
       why = both.map((h, i) => (i === 0 ? '摘要' + q(raw) + 'に' + hitTxt(h) + 'を含み、' : hitTxt(h) + 'も含み、') + '仕分けでは仕事と私用の両方で使う可能性があるものとして扱います。' + profNoteBoth(h)).join('')
         + '用途は本人の判断が必要です。' + normNote(raw, both);
       sum = q(both[0].m) + '（' + both[0].label + '）：仕事と私用の両方の可能性' + (both.length > 1 ? '（他' + (both.length - 1) + '語）' : '');
+      cwhy = both.map((h, i) => (i === 0 ? hitC(h) + 'を含み、' : hitC(h) + 'も含み、') + '仕分けでは仕事と私用の両方で使う可能性があるものとして扱います。' + profNoteBoth(h)).join('') + '用途は本人の判断が必要です。';
     } else if (bizAmb) {
       cat = CAT.CHK; why = '摘要' + q(raw) + 'に' + hitTxt(bizAmb) + 'を含みますが、' + profNoteBiz(bizAmb) + '判断が必要です。' + normNote(raw, biz);
-      sum = q(bizAmb.m) + 'を含むが、プロフィールの記述が否定・対比で判断できない';
+      sum = q(bizAmb.m) + ambSum(bizAmb.prof);
+      cwhy = hitC(bizAmb) + 'を含みますが、' + profNoteBiz(bizAmb) + '判断が必要です。';
     } else if (bizScore >= TH.BIZ_MIN && privScore < TH.BIZ_PRIV_MAX && bizMatched.length) {
       cat = CAT.BIZ; const h = bizMatched[0];
       why = '摘要' + q(raw) + 'に' + bizMatched.map(hitTxt).join('') + 'を含み、プロフィールの' + bizMatched.map(x => q(x.prof.word)).join('') + 'と一致しています。事業に関係する可能性があります。' + normNote(raw, bizMatched);
       sum = bizMatched.map(x => q(x.m)).join('') + 'を含み、プロフィールの' + bizMatched.map(x => q(x.prof.word)).join('') + 'と一致';
+      cwhy = matchSentence(bizMatched) + '事業に関係する可能性があります。';
     } else if (privScore >= TH.PRIV_MIN && bizScore < TH.PRIV_BIZ_MAX) {
       const amb = priv.find(x => x.prof.status === 'ambiguous'), pos = priv.find(x => x.prof.status === 'positive');
-      if (amb) { cat = CAT.CHK; why = '摘要' + q(raw) + 'に' + hitTxt(amb) + 'を含みますが、プロフィールの' + q(amb.prof.word) + 'を含む記述は否定や対比を含み、機械的に判断できませんでした。判断が必要です。'; sum = q(amb.m) + 'を含むが、プロフィールの記述が否定・対比で判断できない'; }
-      else if (pos) { cat = CAT.CHK; why = '摘要' + q(raw) + 'に' + hitTxt(pos) + 'を含みます。プロフィールに' + q(pos.prof.word) + 'を副業に関連して記載した箇所があるため、私用と事業の両方の可能性があります。判断が必要です。'; sum = q(pos.m) + 'を含むが、プロフィールに副業と関連する記載あり'; }
+      if (amb) { cat = CAT.CHK; why = '摘要' + q(raw) + 'に' + hitTxt(amb) + 'を含みますが、' + ambNote(amb.prof) + '判断が必要です。'; sum = q(amb.m) + ambSum(amb.prof); cwhy = hitC(amb) + 'を含みますが、' + ambNote(amb.prof) + '判断が必要です。'; }
+      else if (pos) { cat = CAT.CHK; why = '摘要' + q(raw) + 'に' + hitTxt(pos) + 'を含みます。プロフィールに' + q(pos.prof.word) + 'を副業に関連して記載した箇所があるため、私用と事業の両方の可能性があります。判断が必要です。'; sum = q(pos.m) + 'を含むが、プロフィールに副業と関連する記載あり'; cwhy = hitC(pos) + 'を含みます。プロフィールに' + q(pos.prof.word) + 'を仕事・副業に関連して記載した箇所があるため、私用と事業の両方の可能性があります。判断が必要です。'; }
       else {
         cat = CAT.PRIV;
         why = '摘要' + q(raw) + 'に' + priv.map(hitTxt).join('') + 'を含みます。' + priv.map(h => h.prof.status === 'negated'
@@ -534,21 +740,29 @@ function classifyOne(r, PA, all){
             ? 'プロフィールに' + q(h.prof.word) + 'の記載はありますが、副業との関連を示す記述とは判断していません。'
             : 'プロフィールを照合しましたが、' + h.label + 'に関連する記載（' + listWords(h.pw) + '）は見つかりませんでした。').join('') + '参考の判定で、最終区分は本人が確定します。' + normNote(raw, priv);
         sum = priv.map(x => q(x.m)).join('') + 'を含み、' + (priv[0].prof.status === 'negated' ? 'プロフィールで仕事では使わない旨の記述' : priv[0].prof.status === 'mention' ? 'プロフィールの記載は副業との関連を示さない' : 'プロフィールに関連する記載なし');
+        cwhy = priv.map(hitC).join('') + 'を含みます。' + priv.map(h => h.prof.status === 'negated'
+          ? 'プロフィールには' + q(h.prof.word) + 'を仕事で使わない旨の記述があります。'
+          : h.prof.status === 'mention'
+            ? 'プロフィールに' + q(h.prof.word) + 'の記載はありますが、仕事・副業との関連を示す記述とは判断していません。'
+            : 'プロフィールを照合しましたが、' + h.label + 'に関連する記載（' + listWords(h.pw) + '）は見つかりませんでした。').join('') + '参考の判定で、最終区分は本人が確定します。';
       }
     } else if (biz.length && priv.length) {
       cat = CAT.CHK; why = '摘要' + q(raw) + 'に事業側の語' + biz.map(hitTxt).join('') + 'と私用側の語' + priv.map(hitTxt).join('') + 'の両方を含むため、判断が必要です。'; sum = '事業側の語と私用側の語の両方を含む';
+      cwhy = '事業側の語' + biz.map(hitC).join('') + 'と私用側の語' + priv.map(hitC).join('') + 'の両方を含むため、判断が必要です。';
     } else if (biz.length) {
       cat = CAT.CHK; why = '摘要' + q(raw) + 'に' + biz.map(hitTxt).join('') + 'を含み、事業に関係する可能性がありますが、' + profNoteBiz(biz[0]) + '判断が必要です。' + normNote(raw, biz);
       sum = q(biz[0].m) + 'を含むが、' + profSum(biz[0]);
+      cwhy = biz.map(hitC).join('') + 'を含み、事業に関係する可能性がありますが、' + profNoteBiz(biz[0]) + '判断が必要です。';
     } else {
-      cat = CAT.CHK; why = '摘要' + q(raw) + 'には、事業・私用のどちらかを示す語として登録している語が含まれていませんでした。判断が必要です。'; sum = '事業・私用を示す語が見つからない';
+      cat = CAT.CHK; why = '摘要' + q(raw) + 'には、事業・私用のどちらかを示す語として登録している語が含まれていませんでした。判断が必要です。'; sum = '事業・私用を示す語が見つからない'; cwhy = '事業・私用のどちらかを示す語として登録している語が含まれていませんでした。判断が必要です。';
     }
   }
-  if (r.dup) why += ' 同じ日付・摘要・金額の明細が他に' + r.dup + '件あります（重複の可能性。明細はすべて残しています）。';
-  if (r.warnings.length) why += ' 【読み取り時の注意】' + r.warnings.join('');
+  const dupTxt = r.dup ? ' 同じ日付・摘要・金額の明細が他に' + r.dup + '件あります（重複の可能性。明細はすべて残しています）。' : '';
+  const warnTxt = r.warnings.length ? ' 【読み取り時の注意】' + r.warnings.join('') : '';
+  why += dupTxt + warnTxt; cwhy += dupTxt + warnTxt;
   if (r.dup) sum += '／重複の可能性';
   if (r.warnings.length) sum += '／読み取り注意あり';
-  r.toolCategory = cat; r.reason = why; r.summary = sum;
+  r.toolCategory = cat; r.reason = why; r.summary = sum; r.csvReason = cwhy;   // reason＝画面用（全文）／csvReason＝CSV出力用
 }
 // プロフィールが変わっても finalCategory は触らない（再仕分けはツール仕分けと理由のみ）
 function classifyAll(records, profile){
@@ -557,6 +771,28 @@ function classifyAll(records, profile){
     if (prev && prev !== r.toolCategory) { r.reclassFrom = prev; changed++; } });
   return changed;
 }
+/* ---- まとめて確定（本人の明示的な操作のみ。対象は、未確認の事業候補・私用候補だけ）---- */
+const BULK_VALUE = { [CAT.BIZ]: '事業', [CAT.PRIV]: '私用' };
+function bulkTargets(records, cat){ return BULK_VALUE[cat] ? records.filter(r => !r.finalCategory && r.toolCategory === cat) : []; }   // 要判断・確定済みは含めない
+function applyBulk(records, ids, cat, value, seq){
+  if (BULK_VALUE[cat] !== value) return { stale: false, count: 0, error: true };
+  const cur = bulkTargets(records, cat).map(r => r.id);
+  if (cur.length !== ids.length || cur.some((id, i) => id !== ids[i])) return { stale: true, ids: cur };   // 確認したあとに対象が変わった：古い内容では確定しない
+  cur.forEach(id => { const r = records.find(x => x.id === id); r.finalCategory = value; r.lastEdit = seq; });
+  return { stale: false, count: cur.length };
+}
+const undoableBulk = (records, bulk) => bulk ? records.filter(r => bulk.ids.includes(r.id) && r.finalCategory === bulk.value && r.lastEdit === bulk.seq) : [];   // その後に個別変更されていないものだけ
+function undoBulk(records, bulk){ const t = undoableBulk(records, bulk); t.forEach(r => { r.finalCategory = null; r.lastEdit = 0; }); return t; }
+/* ---- 同じ重複グループ内の最終区分の一括確定・変更（本人の明示的な操作のみ。重複確認の状態・ツール仕分け・元データは変更しない）---- */
+function applyGroupBulk(records, ids, gid, value, seq){
+  if (value !== '事業' && value !== '私用') return { error: true, count: 0 };
+  const set = new Set(ids); const targets = records.filter(r => set.has(r.id));
+  if (!gid || !targets.length || targets.length !== set.size || targets.some(r => r.dupGroup !== gid)) return { error: true, count: 0 };   // 同じ組の明細だけが対象
+  const prev = {}; targets.forEach(r => { prev[r.id] = { fc: r.finalCategory, le: r.lastEdit }; r.finalCategory = value; r.lastEdit = seq; });
+  return { error: false, count: targets.length, ids: targets.map(r => r.id), prev };
+}
+const undoableGroupBulk = (records, b) => b ? records.filter(r => b.ids.includes(r.id) && r.finalCategory === b.value && r.lastEdit === b.seq) : [];   // その後に個別変更されていないものだけ
+function undoGroupBulk(records, b){ const t = undoableGroupBulk(records, b); t.forEach(r => { r.finalCategory = b.prev[r.id].fc; r.lastEdit = b.prev[r.id].le; }); return t; }   // 操作前の最終区分（未確認を含む）へ戻す
 function finalDiff(r){
   return !!r.finalCategory && ((r.finalCategory === '事業' && r.toolCategory === CAT.PRIV) || (r.finalCategory === '私用' && r.toolCategory === CAT.BIZ));
 }
@@ -575,6 +811,16 @@ function amountOut(r){
   const g = /^[=+\-@\t\r]/.test(s); return { text: g ? "'" + s : s, guarded: g };
 }
 function amountOutText(r, altered){ const a = amountOut(r); if (a.guarded) altered.push({ rowNo: r.rowNo, col: '金額', orig: String(r.amountRaw), out: a.text }); return a.text; }
+// 重複確認の状態（本人が明細ごとに設定。ツールは自動で確定しない。ツール仕分け・最終区分・元データには影響しない）
+const DUP_STATUS = ['unconfirmed', 'separate', 'duplicate'];
+const DUP_PREFIX = { unconfirmed: '【重複の可能性・未確認】', separate: '【別取引・本人確認済み】', duplicate: '【重複・本人確認済み】' };
+const dupStatusOf = r => r.dupGroup ? (DUP_STATUS.includes(r.dupStatus) ? r.dupStatus : 'unconfirmed') : '';
+function dupCounts(records){   // 重複候補の内訳：件数（行数）・組数・状態別の件数
+  const c = { total: 0, groups: new Set(), unconfirmed: 0, separate: 0, duplicate: 0 };
+  records.forEach(r => { const st = dupStatusOf(r); if (!st) return; c.total++; c.groups.add(r.dupGroup); c[st]++; });
+  return { total: c.total, groups: c.groups.size, unconfirmed: c.unconfirmed, separate: c.separate, duplicate: c.duplicate };
+}
+function csvReasonOut(r){ return (r.dupGroup ? DUP_PREFIX[dupStatusOf(r)] : '') + (r.csvReason != null ? r.csvReason : r.reason); }   // 重複候補の理由欄の先頭に、重複確認の状態を付ける（その後に、既存のCSV用の仕分け理由）
 function buildCsv(records){
   const altered = []; const lines = [OUT_HEADERS.map(csvField).join(',')];
   records.forEach(r => {
@@ -583,7 +829,7 @@ function buildCsv(records){
       csvField(guardField(r.desc, altered, { rowNo:r.rowNo, col:'摘要' })),
       csvField(amountOutText(r, altered)),
       r.toolCategory, r.finalCategory || '',
-      csvField(guardField(r.reason, altered, { rowNo:r.rowNo, col:'理由' }))
+      csvField(guardField(csvReasonOut(r), altered, { rowNo:r.rowNo, col:'理由' }))
     ].join(','));
   });
   return { text: lines.join('\r\n') + '\r\n', altered };
@@ -595,7 +841,14 @@ function verifyOutput(text, records){
   const absOf = s => { const p = parseAmount(String(s).replace(/^'/, '')); return (p.empty || p.bad) ? 0 : p.value; };   // 符号を除いた金額
   const outSum = data.reduce((s, r) => s + absOf(r[2]), 0);
   const inSum = records.reduce((s, r) => s + (r.amountSigned == null ? absOf(r.amountRaw) : Math.abs(r.amountSigned)), 0);
-  const amountTextOk = data.length === records.length && records.every((r, i) => data[i][2] === amountOut(r).text);   // 金額の表記が元データと同じ
+  // 金額の表記が元データと同じか：比較元は、読み込み時に保存した「原文の行（rec.raw）」の、金額の列のセル（amountCol）。
+  // 読み込み時の正規化・出力と共有する関数（amountOut）の変更の影響を受けない。許容される変更は、数式として解釈され得る数値でない値の先頭の「'」だけ（仕様 §28 D-75）
+  const expectAmount = r => {
+    if (r.amountCol === undefined || !Array.isArray(r.raw)) return amountOut(r).text;   // 原文の行・列が分からない明細（通常は、ない）
+    const s = String(r.amountCol >= 0 && r.amountCol < r.raw.length ? r.raw[r.amountCol] : ''); const p = parseAmount(s);
+    return (s === '' || (!p.empty && !p.bad)) ? s : (/^[=+\-@\t\r]/.test(s) ? "'" + s : s);
+  };
+  const amountTextOk = data.length === records.length && records.every((r, i) => data[i][2] === expectAmount(r));
   return { headOk, outCount: data.length, outSum, inSum, colsOk: data.every(r => r.length === 6), amountTextOk };
 }
 // ==CORE-END==
@@ -603,16 +856,21 @@ function verifyOutput(text, records){
    画面（DOM）
    ===================================================================== */
 const S = {
-  step: 1,
+  step: 1, dupOnly: null,   // dupOnly：画面④で、1つの組だけを表示しているときの組番号
   profile: { content:'', tools:'', place:'', other:'' },
   profileChanged: false,
   records: [], format: null, stats: null, loadError: '', reclass: null,
+  pending: null,      // 画面② 形式の選択待ち { prep, choice }（メモリ内だけ。確定するまで読み込み済みのデータは変えない）
   filter: 'all',      // 画面④の絞り込み
   resFilter: 'all',   // 画面③の絞り込み（表示だけを変える）
   openAll: false,     // 画面③ 詳細の一括開閉
   edit: new Set(),    // 画面④ 再編集中の確定済みカード
   lastId: 0,          // 画面④ 最後に操作したカード
-  keep: new Set()     // 画面④ 絞り込み「仕分けと異なる明細」で、解消直後に一時表示を維持するカード
+  keep: new Set(),    // 画面④ 絞り込み「仕分けと異なる明細」で、解消直後に一時表示を維持するカード
+  opSeq: 0,           // 画面④ 操作の通し番号（まとめて確定の取り消し対象の判定に使う）
+  lastBulk: null,     // 直前のまとめて確定 { ids, value, seq }
+  grpSel: new Set(), grpOpen: false, lastGroupBulk: null,
+  guideOpen: { bulk: false, diff: false, dup: false, undo: false }, lastBulkTotal: null   // 画面④の案内欄の開閉（表示だけの状態。仕分け・重複確認・絞り込みには影響しない）   // 同じ組の一括操作：選択中の明細・区画の開閉・直前の操作（取り消し用）
 };
 const app = document.getElementById('app');
 const STEPS = ['プロフィール入力','CSV読み込み','仕分け結果','明細の確認','最終確認・CSV出力'];
@@ -633,7 +891,7 @@ const catClass = c => c === CAT.BIZ ? 'biz' : c === CAT.PRIV ? 'priv' : 'chk';
 const badge = c => h('span', { class: 'badge ' + catClass(c) }, c);
 const finBadge = r => r.finalCategory ? h('span', { class: 'badge fin' }, '確定：' + r.finalCategory) : h('span', { class: 'badge none' }, '未確認');
 const kindTag = r => r.kind === 'refund' ? h('span', { class: 'tag' }, '返金') : (r.direction === 'in' ? h('span', { class: 'tag' }, '入金') : null);
-const amountText = r => r.amountSigned == null ? '—' : fmtYen(r.amountSigned) + '円';
+const amountText = amountDisp;
 
 function reachable(n){ if (n === 1) return true; if (n === 2) return hasProfile(); return hasProfile() && S.records.length > 0; }
 function go(n){
@@ -657,15 +915,24 @@ function stepper(){
 
 /* ---- 画面1 ---- */
 function screenProfile(){
-  const fields = [['content','副業の内容', true, '例：Webメディア向けの記事ライティング（平日の夜と週末）'],
+  const fields = [['content','仕事・副業の内容', true, '例：Webメディア向けの記事ライティング（平日の夜と週末）'],
     ['tools','使うもの', false, '例：ノートPC、文章校正ツール、AIアシスト など'],
     ['place','作業場所', false, '例：自宅、コワーキングスペース（月会費で利用）'],
     ['other','その他', false, '例：取材の移動、ポートフォリオサイト（ドメイン）、報酬の受け取り方法 など']];
   const next = h('button', { type: 'button', class: 'btn', onclick: () => go(2) }, 'CSV読み込みへ進む');
   const upd = () => { next.disabled = !hasProfile(); };
   const box = h('div', { class: 'card' },
-    h('h2', null, '① 副業プロフィール入力'),
-    h('p', { class: 'note' }, '仕分けの手がかりとして使います。入力内容はこのブラウザの中だけで使われ、外部へは送信されません。'),
+    h('h2', null, '① 仕事・副業プロフィール入力'),
+    h('p', { class: 'intro' }, '個人事業主・副業・フリーランスの方向けに、カード・銀行のCSV明細を「事業候補・私用候補・要判断」に仕分けし、理由を表示します。最終的な区分は、あなたが決めます。確定した結果をCSVで出力できます。'),
+    h('p', { class: 'note' }, '仕事や副業の内容を、明細整理の手がかりとして使用します。入力内容も明細も、ブラウザ内だけで処理され、外部には送信されません。税務上の判断はしません。'),
+    h('details', { class: 'fold', id: 'profHelp' }, h('summary', null, '入力のヒントと例'),
+      h('ul', { class: 'sm' },
+        h('li', null, '今の仕事・サービス・使うもの・作業場所を、具体的に書くほど、仕分けの手がかりになります。'),
+        h('li', null, '以前使っていた・解約した・これから使う予定のものは、そう分かるように書いてください（現在の利用とは区別して扱います）。'),
+        h('li', null, '例：「Webデザイン」「ハンドメイド販売」「写真撮影」'),
+        h('li', null, '入力内容や明細から用途を判断できない場合は、要判断として表示します。'),
+        h('li', null, 'プロフィールの入力は、税務上の判断を決めるものではありません。')),
+      h('p', { class: 'note' }, '例は、入力欄には入りません（入力内容は変わりません）。')),
     fields.map(([k, label, req, ph]) => {
       const ta = h('textarea', { id: 'f_' + k, placeholder: ph, autocomplete: 'off' }); ta.value = S.profile[k];
       ta.addEventListener('input', () => { S.profile[k] = ta.value; if (S.records.length) S.profileChanged = true; upd(); });
@@ -677,26 +944,84 @@ function screenProfile(){
 }
 
 /* ---- 画面2 ---- */
+function commitStatement(res){   // 解析に成功してから、読み込み済みのデータを一括で置き換える
+  S.format = res.format; S.records = res.records; S.stats = res.stats; S.loadError = ''; S.reclass = null;
+  S.dupOnly = null; S.grpSel = new Set(); S.lastGroupBulk = null; S.guideOpen = { bulk: false, diff: false, dup: false, undo: false }; S.lastBulkTotal = null; S.edit = new Set(); S.keep = new Set(); S.lastBulk = null; S.lastId = 0; S.filter = 'all'; S.resFilter = 'all';
+  classifyAll(S.records, S.profile); S.profileChanged = false;
+}
 function loadText(text, fileName){
+  S.pending = null;   // 新しいファイルを選んだら、前の選択待ちは破棄する
   try {
-    const res = parseStatement(text, fileName);       // 解析に成功してから置換する
-    S.format = res.format; S.records = res.records; S.stats = res.stats; S.loadError = ''; S.reclass = null;
-    S.edit = new Set(); S.keep = new Set(); S.lastId = 0; S.filter = 'all'; S.resFilter = 'all';
-    classifyAll(S.records, S.profile); S.profileChanged = false;
+    const prep = prepareStatement(text, fileName);
+    if (prep.needsChoice) { S.pending = { prep, choice: null }; S.loadError = ''; render(); const t = document.getElementById('pendTitle'); if (t) t.focus(); live('形式を選択してください。選択するまで、読み込み済みのデータは変わりません。'); return; }
+    commitStatement(buildStatement(prep, null));
   } catch (e) { S.loadError = e.message; }               // 失敗時は既存データを維持
   render();
   const ok = app.querySelector('.msg.ok'); if (ok) ok.focus({ preventScroll: true });
 }
-function dupGroups(){
+const PV_LABEL = { out: '出金', in: '入金', refund: '返金', zero: '金額0（出金として扱う）', unread: '読み取れません' };
+function pendingPanel(){
+  const P = S.pending, ch = P.prep.choice, box = h('div', { id: 'pendBox' });
+  const res = h('div', { id: 'pendRes' });
+  const verdicts = INTERP_KEYS.map(k => balanceVerdict(ch.balance, k, ch.mixed));
+  function drawRes(){
+    const key = P.choice, parts = [];
+    if (ch.balance.state !== 'none') {
+      parts.push(h('h3', null, '残高の列との照合'),
+        h('p', { class: 'note' }, ch.mixed
+          ? '「残高」の列が、銀行口座の残高とは限らないため（カードの残高などの可能性があります）、この照合は参考です。結果が「不一致」でも、読み込みは止めません。'
+          : '「残高」の列の増減から、金額の向きを確かめた結果です。形式を自動で選ぶものではなく、選択の間違いに気づくための補助です。'),
+        h('ul', { class: 'sm' }, INTERP_KEYS.map((k, i) => h('li', null, INTERP[k].label + '：', h('b', null, verdicts[i].text)))));
+    } else parts.push(h('p', { class: 'note' }, '「残高」の列がないため、残高との照合はできません。プレビューを見て、内容に合う形式を選んでください。'));
+    let block = null;
+    if (!key) parts.push(h('div', { class: 'msg info' }, '形式を選ぶと、先頭5行のプレビューと件数が表示されます。'));
+    else {
+      const pv = previewStatement(P.prep, key), vd = verdicts[INTERP_KEYS.indexOf(key)];
+      if (vd.block) block = '選択中の「' + INTERP[key].label + '」は、残高の増減と逆の向きです（' + vd.text.replace(/^不一致（/, '').replace(/）$/, '') + '）。このままでは読み込めません。選択を見直してください。';
+      parts.push(h('h3', null, 'プレビュー：「' + INTERP[key].label + '」として読むと'),
+        h('p', { class: 'note' }, '元のCSVの先頭5行（全' + pv.total + '件）です。日付・摘要・金額は原文のまま表示し、右側に、この形式での解釈を文字で示します。'),
+        h('div', { class: 'pv' }, pv.head.map(r => h('div', { class: 'pv-i' },
+          h('div', { class: 'pv-t' }, h('span', { class: 'pv-n' }, '元データ' + r.rowNo + '行目　'), r.dateRaw, '　', r.desc),
+          h('div', { class: 'pv-a' }, '金額（原文）：', h('b', null, r.amountRaw === '' ? '（空欄）' : r.amountRaw), '　→　', h('span', { class: 'itag ' + r.label }, PV_LABEL[r.label]))))),
+        h('p', { class: 'cnt' }, '全' + pv.total + '件の内訳：出金 ' + pv.cnt.out + '件／入金 ' + pv.cnt.in + '件／返金 ' + pv.cnt.refund + '件／金額0 ' + pv.cnt.zero + '件／読み取れない金額 ' + pv.cnt.unread + '件'),
+        pv.cnt.unread ? h('p', { class: 'note' }, '読み取れない金額の明細は、金額なしのまま全件保持し、画面③以降で「要判断」として確認できます。') : null);
+      if (block) parts.push(h('div', { class: 'msg err', role: 'alert', id: 'pendBlock' }, block));
+    }
+    const ok = h('button', { type: 'button', class: 'btn', id: 'pendOk', disabled: !key || !!block, 'aria-describedby': block ? 'pendBlock' : null, onclick: () => {
+      if (!P.choice) return;
+      try {
+        if (verdicts[INTERP_KEYS.indexOf(P.choice)].block) return;
+        commitStatement(buildStatement(P.prep, P.choice)); S.pending = null;
+      } catch (e) { S.loadError = e.message; S.pending = null; }
+      render(); const o = app.querySelector('.msg.ok'); if (o) o.focus({ preventScroll: true });
+    } }, 'この内容で読み込む');
+    const cancel = h('button', { type: 'button', class: 'btn sub', onclick: () => { S.pending = null; render(); const p = document.getElementById('pickBtn'); if (p) p.focus(); live('読み込みをやめました。読み込み済みのデータは、そのままです。'); } }, 'やめる');
+    parts.push(h('div', { class: 'row' }, ok, cancel));
+    res.replaceChildren(...parts.filter(Boolean));
+  }
+  const fset = h('fieldset', { class: 'interp' }, h('legend', null, '形式を選んでください（初期状態は未選択です）'),
+    INTERP_KEYS.map(k => h('label', { class: 'opt' }, h('input', { type: 'radio', name: 'interp', value: k, checked: P.choice === k, onchange: () => { P.choice = k; drawRes(); live('「' + INTERP[k].label + '」を選択しました。プレビューを更新しました。'); } }), INTERP[k].label)));
+  drawRes();
+  box.append(h('div', { class: 'pend' },
+    h('h3', { id: 'pendTitle', tabindex: '-1' }, '形式を選んでください：「' + P.prep.fileName + '」'),
+    h('p', null, ch.why),
+    h('p', { class: 'note' }, '選択を間違えると、入金と出金が逆になります。プレビューで確認してから読み込んでください。「この内容で読み込む」を押すまで、読み込み済みのデータ（確定内容を含む）は変わりません。'),
+    fset, res));
+  return box;
+}
+function dupGroups(){   // 同じ内容の明細の組（markDuplicates が付けた組番号ごと）
   const m = new Map();
-  S.records.forEach(r => { if (!r.dup) return; const k = (r.date || nfkc(r.dateRaw)) + '|' + r.descNorm + '|' + r.amountSigned; (m.get(k) || m.set(k, []).get(k)).push(r); });
+  S.records.forEach(r => { if (r.dupGroup) (m.get(r.dupGroup) || m.set(r.dupGroup, []).get(r.dupGroup)).push(r); });
   return [...m.values()];
 }
+const dupCount = () => S.records.filter(r => r.dupGroup).length;
+const dupLabel = () => dupCount() + '件（' + dupGroups().length + '組）';   // 件＝該当する明細の行数、組＝同じ内容のまとまりの数
 function foldList(items, label){
   if (!items.length) return null;
   const ul = h('ul', { class: 'sm' }, items.map(t => h('li', null, t)));
   return items.length > 5 ? h('details', { class: 'fold' }, h('summary', null, label + '（' + items.length + '件）を表示'), ul) : ul;
 }
+const formatLabel = () => S.stats && S.stats.chosen ? '選択した形式：' + INTERP[S.stats.chosen].label : (S.format === 'A' ? 'カード形式' : '銀行形式：' + ((S.stats && S.stats.variant) || '出金額・入金額の列'));
 function screenLoad(){
   const input = h('input', { type: 'file', accept: '.csv,text/csv', id: 'csvfile', hidden: true, 'aria-label': 'CSVファイル' });
   input.addEventListener('change', async () => {
@@ -711,17 +1036,21 @@ function screenLoad(){
   } }, S.records.length ? '別のCSVに置き換える' : 'CSVファイルを選択');
   const st = S.stats;
   let report = null;
+  const stale = !!(S.pending || S.loadError);   // 新しいファイルの選択待ち・読み込み失敗の間は、表示中の件数が前のファイルのものと明示する
   if (st) {
     const groups = dupGroups(), warned = S.records.filter(r => r.warnings.length);
     report = h('div', null,
-      h('div', { class: 'msg ok', role: 'status', tabindex: '-1' }, '「' + st.fileName + '」を読み込みました（' + (S.format === 'A' ? '明細A：カード形式' : '明細B：銀行形式' + (st.variant ? '（' + st.variant + '）' : '')) + '）。'),
+      stale
+        ? h('div', { class: 'msg info', role: 'status', id: 'staleMsg' }, '現在読み込み済みのデータ：「' + st.fileName + '」（' + st.read + '件）。' + (S.pending ? '選択中の新しいファイル「' + S.pending.prep.fileName + '」は、まだ読み込まれていません。「この内容で読み込む」を押すまで、以下の表示と確定内容は、現在のデータのものです。' : '新しいファイルは読み込まれていません。以下の表示と確定内容は、これまでのデータのままです。'))
+        : h('div', { class: 'msg ok', role: 'status', tabindex: '-1' }, '「' + st.fileName + '」を読み込みました（' + formatLabel() + '）。', st.chosen ? h('span', null, '　形式は、あなたの選択に基づいています。') : null),
+      stale ? h('h3', null, '現在読み込み済みのデータの内訳（新しいファイルのものではありません）') : null,
       h('div', { class: 'cards' },
         h('div', { class: 'stat un' }, h('b', null, st.read), h('span', null, '読込件数')),
         h('div', { class: 'stat ' + (warned.length ? 'chk' : 'biz') }, h('b', null, warned.length), h('span', null, '読み取り注意のある明細')),
-        h('div', { class: 'stat ' + (groups.length ? 'chk' : 'biz') }, h('b', null, S.records.filter(r => r.dup).length), h('span', null, '重複の可能性（削除せず保持）')),
+        h('div', { class: 'stat ' + (groups.length ? 'chk' : 'biz') }, h('b', null, dupLabel()), h('span', null, '重複の可能性（削除せず保持）')),
         h('div', { class: 'stat priv' }, h('b', null, st.blank), h('span', null, '読み飛ばした空行'))),
       groups.length ? h('div', null, h('h3', null, '重複の可能性がある明細'),
-        h('p', { class: 'note' }, '日付・摘要・金額が一致していますが、別の取引の可能性もあるため、すべて残しています。'),
+        h('p', { class: 'note' }, '同じ日付・摘要・金額の明細を、重複候補として表示しています。別々の取引の可能性もあるため、自動では削除せず、すべて残してCSVに出力します。「件」は該当する明細の行数、「組」は同じ内容のまとまりの数です。'),
         foldList(groups.map(g => '元データ' + g.map(r => r.rowNo + '行目').join('・') + '：' + g[0].dateRaw + '　' + g[0].desc.trim() + '　' + amountText(g[0])), '重複の一覧')) : null,
       warned.length ? h('div', null, h('h3', null, '読み取り時の注意'),
         foldList(warned.map(r => '元データ' + r.rowNo + '行目：' + r.warnings.join('')), '注意の一覧')) : null,
@@ -730,8 +1059,17 @@ function screenLoad(){
   }
   return h('div', { class: 'card' },
     h('h2', null, '② CSV読み込み'),
-    h('p', { class: 'note' }, '明細A（カード形式）または明細B（銀行形式）のCSVを、1ファイルずつ読み込みます。UTF-8 / UTF-8 BOM付きに対応しています。'),
+    h('p', { class: 'note' }, 'カードや銀行の利用明細CSVを、1ファイルずつ読み込みます。文字コードは UTF-8／UTF-8 BOM付きに対応しています（Shift_JIS は未対応です）。'),
+    h('details', { class: 'fold', id: 'fmtHelp' }, h('summary', null, '対応している形式'),
+      h('ul', { class: 'sm' },
+        h('li', null, '1行目に見出し（列名）がある、カンマ区切りのCSV'),
+        h('li', null, '日付・店名（摘要）・金額の列があり、カードの明細と分かる列名のカード形式（マイナスの金額は返金として扱います）'),
+        h('li', null, '日付・摘要・出金額・入金額の列がある銀行形式'),
+        h('li', null, '日付・摘要・金額・入出金区分（入金／出金）の列がある銀行形式'),
+        h('li', null, '金額が1列で、カードか銀行かを列名から判断できないCSV（残高の列があるものを含む）：読み込み時に、「カード明細」「銀行明細（マイナス＝出金）」「銀行明細（プラス＝出金）」から選び、プレビューを確認して読み込みます')),
+      h('p', { class: 'note' }, '金額の向き（入金・出金）を列名から判断できないCSVは、ツールが自動では決めません。選択を間違えると入金と出金が逆になるため、プレビューで確認してください。残高の列があるときは、残高の増減との照合結果も表示します（照合できない場合もあります）。')),
     h('div', { class: 'row' }, pick, input),
+    S.pending ? pendingPanel() : null,
     S.loadError ? h('div', { class: 'msg err', role: 'alert' }, S.loadError + (S.records.length ? '（読み込み済みのデータはそのまま維持しています）' : '')) : null,
     report);
 }
@@ -743,7 +1081,7 @@ function buildResultRows(filter){
   return S.records.filter(r => f === 'all' || r.toolCategory === f).map(r => h('tr', { 'data-id': r.id },
     h('td', { 'data-l': '日付' }, r.dateRaw),
     h('td', { class: 'desc', 'data-l': '摘要' }, r.desc, kindTag(r)),
-    h('td', { class: 'num', 'data-l': '金額' }, r.amountSigned == null ? '—' : fmtYen(r.amountSigned)),
+    h('td', { class: 'num', 'data-l': '金額' }, amountDisp(r)),
     h('td', { 'data-l': 'ツール仕分け' }, badge(r.toolCategory)),
     h('td', { 'data-l': '理由' }, h('div', { class: 'sum' }, summaryOf(r)),
       r.reclassFrom ? h('div', { class: 'warn-t' }, 'プロフィール変更により、ツール仕分けが「' + r.reclassFrom + '」から「' + r.toolCategory + '」に変わりました。') : null,
@@ -790,6 +1128,7 @@ function screenResult(){
     h('h2', null, '③ 仕分け結果'),
     h('p', { class: 'note' }, 'ツールによる仕分けは「候補」です。税務上の可否を示すものではありません。最終区分は、次の画面で本人が確定します。'),
     reclassBanner(),
+    h('div', { class: 'row', style: 'margin-top:0' }, h('button', { type: 'button', class: 'btn', onclick: () => go(4) }, '明細の確認へ進む')),
     h('div', { class: 'cards' },
       h('div', { class: 'stat biz' }, h('b', null, cnt(CAT.BIZ)), h('span', null, '事業候補')),
       h('div', { class: 'stat priv' }, h('b', null, cnt(CAT.PRIV)), h('span', null, '私用候補')),
@@ -810,26 +1149,65 @@ function screenConfirm(){
   const note = h('div');
   const next = h('button', { type: 'button', class: 'btn', id: 'nextBtn' }, '次の未確認へ');
   const sel = h('select', { id: 'flt', 'aria-label': '表示の絞り込み' },
-    [['all','すべて'],['un','未確認のみ'],['diff','仕分けと異なる明細（0件）'],[CAT.BIZ, CAT.BIZ],[CAT.PRIV, CAT.PRIV],[CAT.CHK, CAT.CHK]].map(([v, t]) => h('option', { value: v }, t)));
-  const optDiff = sel.querySelector('option[value="diff"]');
+    [['all','すべて'],['un','未確認のみ'],['diff','仕分けと異なる明細（0件）'],['dup','重複の可能性（0件・0組）'],[CAT.BIZ, CAT.BIZ],[CAT.PRIV, CAT.PRIV],[CAT.CHK, CAT.CHK]].map(([v, t]) => h('option', { value: v }, t)));
+  const optDiff = sel.querySelector('option[value="diff"]'), optDup = sel.querySelector('option[value="dup"]');
+  const dupMap = new Map(); S.records.forEach(r => { if (r.dupGroup) (dupMap.get(r.dupGroup) || dupMap.set(r.dupGroup, []).get(r.dupGroup)).push(r); });
+  const DUP_LABEL = { unconfirmed: '重複の可能性（未確認）', separate: '別々の取引（確認済み）', duplicate: '重複明細として記録（確認済み）' };
+  const dupLine = r => {   // 重複の可能性：状態の表示＋同じ組の元データ行番号＋状態の設定（本人が明細ごとに行う）＋同じ組をまとめて表示
+    if (!r.dupGroup) return null; const g = dupMap.get(r.dupGroup) || [r]; const st = dupStatusOf(r);
+    const mkd = (v, t) => h('button', { type: 'button', class: 'dupbtn', 'aria-pressed': st === v ? 'true' : 'false', onclick: () => setDup(r, v) }, t);
+    return h('div', { class: 'dupline' + (st === 'unconfirmed' ? '' : ' done') },
+      h('span', { class: st === 'unconfirmed' ? 'dupmark' : 'dupmark-done' }, DUP_LABEL[st]),
+      h('span', null, '同じ内容：元データ' + g.map(x => x.rowNo + '行目').join('・') + '（この組は' + g.length + '件）'),
+      h('div', { class: 'dupbtns', role: 'group', 'aria-label': r.desc.trim() + '（元データ' + r.rowNo + '行目）の重複確認' }, mkd('unconfirmed', '重複未確認'), mkd('separate', '別々の取引として扱う'), mkd('duplicate', '重複明細として記録する')),
+      st === 'duplicate' ? h('span', { class: 'dupnote' }, '元データは削除されません。CSVには出力され、理由欄に「重複・本人確認済み」と記載されます。事業／私用の確定は、別に必要です。') : null,
+      g.length > 1 ? h('button', { type: 'button', class: 'jump', 'aria-label': '同じ組の' + g.length + '件の明細を、まとめて表示する', onclick: () => showGroup(r.dupGroup) }, '同じ組の' + g.length + '件をまとめて表示') : null);
+  };
+  const hasDlg = typeof HTMLDialogElement === 'function' && typeof document.createElement('dialog').showModal === 'function';
+  const gbox = h('div', { id: 'grpBox' });
+  const bulkBody = h('div', { class: 'bulk-body' });
+  const bulkSum = h('span', { class: 'bs2' }, '');
+  const bulkBox = hasDlg ? h('details', { class: 'bulk', id: 'gdBulk', open: S.guideOpen.bulk }, h('summary', null, h('span', { class: 'bt' }, 'まとめて確定（任意）'), bulkSum), bulkBody) : null;
+  if (bulkBox) bulkBox.addEventListener('toggle', () => { S.guideOpen.bulk = bulkBox.open; });
+  const gnav = h('div', { id: 'grpNav', class: 'gnav' });   // 同じ組を表示している間の、組の移動（折りたたみの外）
+  // 案内欄の折りたたみ区画：件数などの要約を、閉じた状態でも表示する。開閉は、表示だけの状態（S.guideOpen）で、明細を確定しても、勝手に開かない
+  const sec = (key, id, title, info, ...body) => { const d = h('details', { class: 'bulk gsec', id, open: S.guideOpen[key] }, h('summary', null, h('span', { class: 'bt' }, title), h('span', { class: 'bs2' }, info)), h('div', { class: 'bulk-body' }, body)); d.addEventListener('toggle', () => { S.guideOpen[key] = d.open; }); return d; };
   S.keep = new Set();   // 画面を開き直したときは、最新の不一致状態で一覧を作る
   sel.value = S.filter;
   // 「仕分けと異なる明細」：ツールが要判断の明細・未確認の明細は含めない（finalDiff）。解消直後のカードだけ、次の絞り込みまで一時的に表示を維持する
-  const visible = r => S.filter === 'all' || (S.filter === 'un' ? !r.finalCategory : S.filter === 'diff' ? (finalDiff(r) || S.keep.has(r.id)) : r.toolCategory === S.filter);
+  const visible = r => S.filter === 'all' || (S.filter === 'un' ? !r.finalCategory : S.filter === 'diff' ? (finalDiff(r) || S.keep.has(r.id)) : S.filter === 'dup' ? (r.dupGroup > 0 && (!S.dupOnly || r.dupGroup === S.dupOnly)) : r.toolCategory === S.filter);
   const card = id => list.querySelector('[data-id="' + id + '"]');
   function refreshBar(){
     const n = unconfirmed(); un.textContent = '未確認 ' + n + '件 / 全' + S.records.length + '件'; un.className = 'un' + (n === 0 ? ' zero' : '');
     prog.value = S.records.length - n; next.disabled = n === 0;
-    const d = S.records.filter(finalDiff).length;
+    const d = S.records.filter(finalDiff).length, dn = dupCount(), dm = dupGroups().length;
     optDiff.textContent = '仕分けと異なる明細（' + d + '件）';
-    note.replaceChildren(d
-      ? h('div', { class: 'msg info' },
-          h('p', null, '仕分けと異なる確定が' + d + '件あります。あなたが確定した区分が優先されます。確認のための情報で、エラーではありません。出力もできます。'),
-          h('button', { type: 'button', class: 'btn sub', id: 'showDiff', onclick: showDiff }, '仕分けと異なる明細を表示'))
-      : (n === 0 ? h('div', { class: 'msg ok' }, '全件確定済みで、仕分けと異なる確定はありません。') : ''));
+    optDup.textContent = '重複の可能性（' + dn + '件・' + dm + '組）';
+    const parts = [];
+    if (d) parts.push(sec('diff', 'gdDiff', '仕分けと異なる確定', d + '件',
+      h('p', null, '仕分けと異なる確定が' + d + '件あります。あなたが確定した区分が優先されます。確認のための情報で、エラーではありません。出力もできます。'),
+      h('button', { type: 'button', class: 'btn sub', id: 'showDiff', onclick: showDiff }, '仕分けと異なる明細を表示')));
+    else if (n === 0) parts.push(h('div', { class: 'msg ok' }, '全件確定済みで、仕分けと異なる確定はありません。'));
+    const dc = dupCounts(S.records);
+    if (dn) parts.push(sec('dup', 'gdDup', '重複明細の確認', dn + '件・' + dm + '組／確認済み ' + (dc.separate + dc.duplicate) + '件（重複 ' + dc.duplicate + '・別取引 ' + dc.separate + '・未確認 ' + dc.unconfirmed + '）',
+      h('p', null, '重複の可能性のある明細が' + dn + '件（' + dm + '組）あります。同じ日付・摘要・金額の明細を、重複候補として表示しています。別々の取引の可能性もあるため、自動では削除せず、すべてCSVに出力します。重複かどうかは、明細ごとに、あなたが設定できます（任意。確定や出力は妨げません）。'),
+      h('p', null, '重複確認の状況：重複明細として記録 ' + dc.duplicate + '件／別々の取引として確認 ' + dc.separate + '件／重複未確認 ' + dc.unconfirmed + '件。確認結果は、CSVの理由欄の先頭に記載されます。'),
+      (S.filter === 'dup' && S.dupOnly) ? h('p', { class: 'note' }, '1つの組（' + S.records.filter(x => x.dupGroup === S.dupOnly).length + '件）だけを表示しています。「すべての重複明細を表示」で、すべての組を表示します。') : null,
+      h('button', { type: 'button', class: 'btn sub', id: 'showDup', onclick: showDup }, '重複の可能性のある明細を表示')));
+    const ug = undoableGroupBulk(S.records, S.lastGroupBulk), ub = undoableBulk(S.records, S.lastBulk);
+    if (ug.length || ub.length) {   // 2種類の取り消しは、1つの区画にまとめる。対象と件数は、区別して表示する（取り消しの条件は変更しない）
+      const kinds = (ug.length ? 1 : 0) + (ub.length ? 1 : 0);
+      parts.push(sec('undo', 'gdUndo', '一括操作の取り消し', kinds + '種類' + (ug.length ? '（同じ組の一括操作 ' + ug.length + '件' : '（') + (ug.length && ub.length ? '・' : '') + (ub.length ? 'まとめて確定 ' + ub.length + '件' : '') + '）',
+        ug.length ? h('div', { class: 'undo-one' },
+          h('p', null, '直前の「同じ組の一括操作」（' + S.lastGroupBulk.value + '・' + S.lastGroupBulk.ids.length + '件）のうち、その後に個別変更していない' + ug.length + '件を、操作前の最終区分に戻せます。'),
+          h('button', { type: 'button', class: 'btn sub', id: 'undoGrp', onclick: undoGroup }, '直前の同じ組の一括操作を取り消す')) : null,
+        ub.length ? h('div', { class: 'undo-one' },
+          h('p', null, '直前のまとめて確定（' + S.lastBulk.value + '・' + S.lastBulk.ids.length + '件）のうち、その後に個別変更していない' + ub.length + '件を、未確認に戻せます。'),
+          h('button', { type: 'button', class: 'btn sub', id: 'undoBulk', onclick: undoLast }, '直前のまとめて確定を取り消す')) : null));
+    }
+    note.replaceChildren(...parts);
+    renderBulk(); drawGroup(); drawNav();
   }
-  const head = r => h('div', { class: 'h' }, h('span', { class: 't' }, r.dateRaw + '　' + r.desc, kindTag(r)),
-    h('span', null, h('b', null, amountText(r)), '　', badge(r.toolCategory)));
   const diffNotes = r => [
     r.reclassFrom ? h('div', { class: 'warn-t' }, 'プロフィール変更により、ツール仕分けが「' + r.reclassFrom + '」から「' + r.toolCategory + '」に変わりました。') : null,
     finalDiff(r) ? compareBox(r) : null,   // ツールの仕分けと本人の最終区分を並べて表示（フル表示・コンパクト表示の両方）
@@ -839,16 +1217,19 @@ function screenConfirm(){
   function fullCard(r){
     const mk = v => h('button', { type: 'button', 'aria-pressed': r.finalCategory === v ? 'true' : 'false', onclick: () => choose(r, v) }, v);
     return h('div', { class: 'item ' + catClass(r.toolCategory), 'data-id': r.id },
-      head(r), h('p', { class: 'reason' }, r.reason), diffNotes(r),   // 未確認カードでは理由の全文を表示
-      h('div', { class: 'choice', role: 'group', 'aria-label': r.desc.trim() + ' の最終区分' }, mk('事業'), mk('私用'),
+      h('div', { class: 'r1' }, h('span', null, r.dateRaw), h('b', null, amountText(r)), badge(r.toolCategory)),   // 1段目：日付・金額・ツール仕分け
+      h('div', { class: 'r2' }, h('span', { class: 't' }, r.desc, kindTag(r)),                                       // 2段目：明細名称（全文）と、事業・私用のボタン
+        h('div', { class: 'choice', role: 'group', 'aria-label': r.desc.trim() + ' の最終区分' }, mk('事業'), mk('私用'))),
+      dupLine(r), h('p', { class: 'reason' }, r.reason), diffNotes(r),                                                // 3段目：仕分け理由（全文）
+      h('div', { class: 'r4' }, finBadge(r),                                                                          // 4段目：状態表示と、確定済みの場合の操作
         r.finalCategory ? h('button', { type: 'button', class: 'plain', onclick: () => reset(r) }, '未確認に戻す') : null,
-        r.finalCategory ? h('button', { type: 'button', class: 'plain', onclick: () => closeEdit(r) }, '閉じる') : null, finBadge(r)));
+        r.finalCategory ? h('button', { type: 'button', class: 'plain', onclick: () => closeEdit(r) }, '閉じる') : null));
   }
   function compactCard(r){
     return h('div', { class: 'item compact ' + catClass(r.toolCategory), 'data-id': r.id },
       h('span', { class: 't' }, r.dateRaw + '　' + r.desc, kindTag(r)), h('b', null, amountText(r)), badge(r.toolCategory), finBadge(r),
       h('button', { type: 'button', class: 'chg', 'aria-label': r.desc.trim() + ' の確定内容を変更する', onclick: () => openEdit(r) }, '変更する'),
-      diffNotes(r));
+      dupLine(r), diffNotes(r));
   }
   const row = r => (!r.finalCategory || S.edit.has(r.id)) ? fullCard(r) : compactCard(r);
   function swap(r, focusSel){
@@ -860,10 +1241,10 @@ function screenConfirm(){
     if (resolved) S.keep.add(r.id); else S.keep.delete(r.id);
     return resolved;
   }
-  function choose(r, v){ const was = finalDiff(r); r.finalCategory = v; S.edit.delete(r.id); S.lastId = r.id; const resolved = afterChange(r, was);
+  function choose(r, v){ const was = finalDiff(r); r.finalCategory = v; r.lastEdit = ++S.opSeq; S.edit.delete(r.id); S.lastId = r.id; const resolved = afterChange(r, was);
     swap(r, '.chg');
     live('「' + r.desc.trim() + '」を「' + v + '」で確定しました。' + (resolved ? '仕分けと一致しました。次の絞り込み操作で、この一覧から外れます。' : '') + '未確認は残り' + unconfirmed() + '件、仕分けと異なる明細は' + S.records.filter(finalDiff).length + '件です。'); }
-  function reset(r){ const was = finalDiff(r); r.finalCategory = null; S.edit.delete(r.id); S.lastId = r.id; const resolved = afterChange(r, was);
+  function reset(r){ const was = finalDiff(r); r.finalCategory = null; r.lastEdit = ++S.opSeq; S.edit.delete(r.id); S.lastId = r.id; const resolved = afterChange(r, was);
     swap(r, '.choice button');
     live('「' + r.desc.trim() + '」を未確認に戻しました。' + (resolved ? '仕分けと異なる明細には数えません。次の絞り込み操作で、この一覧から外れます。' : '') + '未確認は' + unconfirmed() + '件、仕分けと異なる明細は' + S.records.filter(finalDiff).length + '件です。'); }
   function showDiff(){ sel.value = 'diff'; fill(); focusFirstCard(); live('仕分けと異なる明細を' + S.records.filter(finalDiff).length + '件表示しました。'); }
@@ -872,16 +1253,164 @@ function screenConfirm(){
     if (S.filter === 'un') return h('div', null, h('p', { class: 'note' }, '未確認の明細はありません（全件確定済みです）'),
       d ? h('button', { type: 'button', class: 'btn sub', onclick: showDiff }, '仕分けと異なる明細（' + d + '件）を見る') : null);
     if (S.filter === 'diff') return h('p', { class: 'note' }, '仕分けと異なる明細はありません。（ツールの仕分けが「要判断」の明細と、未確認の明細は、この一覧に含めません）');
+    if (S.filter === 'dup') return h('p', { class: 'note' }, '重複の可能性のある明細はありません。');
     return h('p', { class: 'note' }, '該当する明細はありません。');
+  }
+  function setDup(r, v){   // 重複確認の状態だけを変更する（ツール仕分け・最終区分・元データは変更しない）
+    if (!DUP_STATUS.includes(v) || !r.dupGroup) return; r.dupStatus = v; swap(r, '.dupbtns button[aria-pressed="true"]');
+    live('元データ' + r.rowNo + '行目を「' + DUP_LABEL[v] + '」にしました。重複確認の状況：重複明細 ' + dupCounts(S.records).duplicate + '件、別々の取引 ' + dupCounts(S.records).separate + '件、未確認 ' + dupCounts(S.records).unconfirmed + '件。');
+  }
+  function showGroup(gid){ S.grpSel = new Set(); S.grpOpen = true; S.dupOnly = gid; sel.value = 'dup'; fill(); focusFirstCard(); live('同じ組の' + S.records.filter(x => x.dupGroup === gid).length + '件を表示しました。'); }
+  function showDup(){ S.dupOnly = null; sel.value = 'dup'; fill(); focusFirstCard(); live('重複の可能性のある明細を' + dupLabel() + '表示しました。'); }
+  function jumpTo(id){   // 同じ組の別の明細へ移動するだけ（確定・削除はしない）
+    let el = card(id); if (!el) { sel.value = 'all'; fill(); el = card(id); }
+    if (el) { el.scrollIntoView({ block: 'center' }); const x = el.querySelector('.chg') || el.querySelector('.choice button'); if (x) x.focus(); S.lastId = id;
+      live('元データ' + S.records[id - 1].rowNo + '行目の明細へ移動しました。'); }
+  }
+  /* ---- まとめて確定：本人が内容を確認し、明示的に操作したときだけ確定する ---- */
+  function renderBulk(){
+    if (!bulkBox) return;
+    const act = (cat, val) => { const n = bulkTargets(S.records, cat).length;
+      return h('div', { class: 'bulk-act' }, h('button', { type: 'button', class: 'btn sub', 'data-cat': cat, disabled: n === 0, onclick: () => openBulkDialog(cat, val) }, '未確認の' + cat + n + '件を「' + val + '」で確定…')); };
+    const nb = bulkTargets(S.records, CAT.BIZ).length, np = bulkTargets(S.records, CAT.PRIV).length, tot = nb + np;
+    bulkSum.textContent = '対象 ' + tot + '件（事業候補 ' + nb + '・私用候補 ' + np + '）';
+    if (S.lastBulkTotal > 0 && tot === 0 && bulkBox.open) { bulkBox.open = false; S.guideOpen.bulk = false; }   // 対象が0件になったときは、自動で折りたたむ（機能の存在と、対象件数は、要約で分かる）
+    S.lastBulkTotal = tot;
+    bulkBody.replaceChildren(
+      h('p', { class: 'note' }, '内容を確認したうえで、未確認の事業候補・私用候補を、まとめて確定できます。確定するのは、あなたが操作したときだけです。要判断はまとめて確定できず、1件ずつ確認して確定します。確定済みの明細は変更しません。'),
+      act(CAT.BIZ, '事業'), act(CAT.PRIV, '私用'));
+  }
+  function openBulkDialog(cat, val){
+    let ids = bulkTargets(S.records, cat).map(r => r.id); if (!ids.length) return;
+    const dlg = h('dialog', { class: 'bulk-dlg', 'aria-labelledby': 'bulkTitle' });
+    const title = h('h3', { id: 'bulkTitle' });
+    const listBox = h('div', { class: 'bulk-list', tabindex: '0', role: 'region', 'aria-label': '対象明細の一覧（スクロールできます）' });
+    const msg = h('div', { role: 'status' });
+    const chk = h('input', { type: 'checkbox', id: 'bulkChk' });
+    const cancel = h('button', { type: 'button', class: 'btn sub', id: 'bulkCancel' }, 'キャンセル');
+    const ok = h('button', { type: 'button', class: 'btn', id: 'bulkOk', disabled: true });
+    function render(){
+      const rs = ids.map(id => S.records[id - 1]);
+      title.textContent = '未確認の' + cat + ' ' + ids.length + '件を「' + val + '」で確定します';
+      listBox.replaceChildren(...rs.map(r => h('div', { class: 'bulk-row' },
+        h('div', { class: 'bt' }, r.dateRaw + '　' + r.desc.trim(), kindTag(r), '　', amountText(r)),
+        h('div', { class: 'bs' }, summaryOf(r)),
+        h('details', { class: 'det' }, h('summary', null, '理由の全文'), h('p', { class: 'full' }, r.reason)))));
+      chk.checked = false; ok.disabled = true; ok.textContent = '確認した' + ids.length + '件を' + val + 'に確定';
+    }
+    chk.addEventListener('change', () => { ok.disabled = !chk.checked || ids.length === 0; });
+    cancel.addEventListener('click', () => dlg.close());
+    ok.addEventListener('click', () => {
+      if (!chk.checked) return;
+      const res = applyBulk(S.records, ids, cat, val, ++S.opSeq);
+      if (res.stale) {   // 確認したあとに対象が変わった：古い内容では確定せず、再確認を求める
+        ids = res.ids; render(); msg.replaceChildren(h('div', { class: 'msg info' }, '対象の明細が変わったため、確定しませんでした。内容を更新したので、もう一度ご確認ください。'));
+        return;
+      }
+      if (res.error) return;
+      S.lastBulk = { ids: ids.slice(), value: val, seq: S.opSeq };
+      fill();
+      live('未確認の' + cat + res.count + '件を「' + val + '」で確定しました。未確認は残り' + unconfirmed() + '件です。直前のまとめて確定は取り消せます。');
+      dlg.close();
+    });
+    dlg.addEventListener('close', () => {   // 閉じたら、元のボタンへフォーカスを戻す（無効になっていれば、区画の見出しへ）
+      dlg.remove(); const b = bulkBody.querySelector('[data-cat="' + cat + '"]'); const t = (b && !b.disabled) ? b : bulkBox.querySelector('summary'); if (t) t.focus();
+    });
+    dlg.append(title,
+      h('p', { class: 'note' }, '確定済みの明細は変更しません。要判断は含みません。この画面を開いただけでは、最終区分は変更されません。'),
+      listBox, msg, h('label', { class: 'chkrow', for: 'bulkChk' }, chk, '上記の対象明細を確認しました'),
+      h('div', { class: 'row' }, cancel, ok));
+    render(); document.body.append(dlg); dlg.showModal(); cancel.focus();   // 初期フォーカスはキャンセル
+  }
+  /* ---- 同じ組の最終区分の一括確定・変更：同じ組をまとめて表示したときだけ。本人が対象と区分を選び、内容を確認してから確定する ---- */
+  function undoGroup(){
+    const b = S.lastGroupBulk, t = undoGroupBulk(S.records, b); S.lastGroupBulk = null; t.forEach(r => S.edit.delete(r.id)); fill();
+    live('直前の同じ組の一括操作（' + (b ? b.value : '') + '）を取り消し、' + t.length + '件を操作前の最終区分に戻しました。未確認は' + unconfirmed() + '件です。');
+  }
+  const groupIds = () => dupGroups().map(g => g[0].dupGroup);
+  function gotoGroup(gid, focusId){   // 組の移動：表示を切り替えるだけ（重複確認の状態・最終区分は変更しない）。未確定のチェック選択は、解除する
+    S.grpSel = new Set(); S.grpOpen = true; S.dupOnly = gid; S.filter = 'dup'; sel.value = 'dup'; fill();
+    const ids = groupIds(), i = ids.indexOf(gid), k = (dupMap.get(gid) || []).length;
+    gnav.scrollIntoView({ block: 'start' });
+    const f = document.getElementById(focusId) && !document.getElementById(focusId).disabled ? document.getElementById(focusId) : document.getElementById('grpSelect'); if (f) f.focus({ preventScroll: true });
+    live('組 ' + (i + 1) + '／' + ids.length + ' を表示しました（' + k + '件）。');
+  }
+  function drawNav(){
+    if (S.filter !== 'dup' || !dupCount()) { gnav.replaceChildren(); return; }
+    const gs = dupGroups(), ids = gs.map(g => g[0].dupGroup), cur = S.dupOnly ? ids.indexOf(S.dupOnly) : -1;
+    const stat = rs => '重複確認済み ' + rs.filter(r => dupStatusOf(r) !== 'unconfirmed').length + '／' + rs.length + '件　最終区分 確定 ' + rs.filter(r => r.finalCategory).length + '／' + rs.length + '件';   // 重複確認と、最終区分の確定は、別の状態
+    const prev = h('button', { type: 'button', class: 'btn sub', id: 'grpPrev', disabled: cur <= 0, onclick: () => gotoGroup(ids[cur - 1], 'grpPrev') }, '◀ 前の組');
+    const nxt = h('button', { type: 'button', class: 'btn sub', id: 'grpNext', disabled: cur === ids.length - 1, onclick: () => gotoGroup(ids[cur + 1], 'grpNext') }, '次の組 ▶');
+    const pick = h('select', { id: 'grpSelect', 'aria-label': '組を選んで表示' }, cur < 0 ? h('option', { value: '' }, '組を選ぶ…') : null,
+      gs.map((g, i) => h('option', { value: g[0].dupGroup }, '組' + (i + 1) + '／' + gs.length + '：' + g[0].dateRaw + ' ' + g[0].desc.trim() + ' ' + amountText(g[0]) + '（' + g.length + '件）')));
+    pick.value = cur < 0 ? '' : String(S.dupOnly);
+    pick.addEventListener('change', () => { if (pick.value) gotoGroup(+pick.value, 'grpSelect'); });
+    const all = h('button', { type: 'button', class: 'btn sub', id: 'grpAll', disabled: cur < 0, onclick: () => { S.grpSel = new Set(); showDup(); } }, 'すべての重複明細を表示');
+    const back = h('button', { type: 'button', class: 'btn sub', id: 'grpBack', onclick: () => { S.dupOnly = null; S.grpSel = new Set(); sel.value = 'un'; fill(); document.querySelector('.bar').scrollIntoView({ block: 'start' }); live('未確認の明細を表示しました。'); } }, '未確認の明細に戻る');
+    const g = cur >= 0 ? gs[cur] : null;
+    gnav.replaceChildren(h('div', { class: 'gnav-row' }, prev, pick, nxt, all, back),
+      h('p', { class: 'gnav-info', id: 'grpInfo' }, g ? ('組 ' + (cur + 1) + '／' + gs.length + '：' + g[0].dateRaw + '　' + g[0].desc.trim() + '　' + amountText(g[0]) + '（組内 ' + g.length + '件）｜' + stat(g)) : ('すべての重複明細：' + dupLabel() + '｜' + stat(gs.flat()))));
+  }
+  function drawGroup(){
+    if (!(S.filter === 'dup' && S.dupOnly)) { gbox.replaceChildren(); return; }
+    const gid = S.dupOnly, rs = S.records.filter(x => x.dupGroup === gid); S.grpSel = new Set([...S.grpSel].filter(id => rs.some(x => x.id === id)));
+    const btns = [], upd = () => { btns.forEach(([b, v]) => { b.disabled = S.grpSel.size === 0; b.textContent = '選択した' + S.grpSel.size + '件を「' + v + '」にする…'; }); cnt.textContent = '選択中：' + S.grpSel.size + '件 / この組 ' + rs.length + '件'; };
+    const cnt = h('p', { class: 'note', role: 'status' });
+    const rowsEl = rs.map(r => h('div', { class: 'grp-row' },
+      h('label', { class: 'chkrow', for: 'grp_' + r.id }, h('input', { type: 'checkbox', id: 'grp_' + r.id, checked: S.grpSel.has(r.id), onchange: e => { e.target.checked ? S.grpSel.add(r.id) : S.grpSel.delete(r.id); upd(); } }),
+        '元データ' + r.rowNo + '行目　' + r.desc.trim() + '　' + amountText(r)),
+      h('div', { class: 'grp-meta' }, badge(r.toolCategory), h('span', null, '重複確認：' + DUP_LABEL[dupStatusOf(r)]), h('span', null, '現在の最終区分：'), finBadge(r)),
+      h('div', { class: 'bs' }, summaryOf(r)), h('details', { class: 'det' }, h('summary', null, '理由の全文'), h('p', { class: 'full' }, r.reason)),
+      r.toolCategory === CAT.CHK ? h('p', { class: 'note' }, 'ツール仕分けは「要判断」です。理由を確認したうえで、変更する場合だけ、この明細を個別に選択してください。') : null));
+    const mkBtn = v => { const b = h('button', { type: 'button', class: 'btn sub', onclick: () => openGroupDialog(gid, v) }, ''); btns.push([b, v]); return b; };
+    const selAll = h('button', { type: 'button', class: 'btn sub', onclick: () => { rs.forEach(r => { if (r.toolCategory !== CAT.CHK) S.grpSel.add(r.id); }); drawGroup(); live('要判断を除く' + S.grpSel.size + '件を選択しました。'); } }, '要判断を除く全件を選択');
+    const selNone = h('button', { type: 'button', class: 'btn sub', onclick: () => { S.grpSel = new Set(); drawGroup(); live('選択を解除しました。'); } }, '選択を解除');
+    const det = h('details', { class: 'fold', id: 'grpPanel', open: S.grpOpen },
+      h('summary', null, 'この組（' + rs.length + '件）の最終区分をまとめて変更（任意）'),
+      h('p', { class: 'note' }, '選択した明細だけを変更します。重複確認の状態、選択していない明細、別の組の明細は変わりません。確定済みの明細も、選択すれば変更できます。要判断の明細は、「全件を選択」に含まれません。理由を確認して、個別に選択してください。初期状態では、すべて未選択です。'),
+      h('div', { class: 'row' }, selAll, selNone), cnt, h('div', { class: 'grp-list' }, rowsEl), h('div', { class: 'row' }, mkBtn('事業'), mkBtn('私用')));
+    det.addEventListener('toggle', () => { S.grpOpen = det.open; });
+    gbox.replaceChildren(det); upd();
+  }
+  function openGroupDialog(gid, val){
+    const ids = [...S.grpSel]; if (!ids.length) return; const rs = ids.map(id => S.records[id - 1]);
+    const dlg = h('dialog', { class: 'bulk-dlg', 'aria-labelledby': 'grpTitle' });
+    const chk = h('input', { type: 'checkbox', id: 'grpChk' }), cancel = h('button', { type: 'button', class: 'btn sub', id: 'grpCancel' }, 'キャンセル');
+    const ok = h('button', { type: 'button', class: 'btn', id: 'grpOk', disabled: true }, '確認した' + rs.length + '件を' + val + 'に確定');
+    const same = rs.filter(r => r.finalCategory === val).length;
+    chk.addEventListener('change', () => { ok.disabled = !chk.checked; });
+    cancel.addEventListener('click', () => dlg.close());
+    ok.addEventListener('click', () => {
+      if (!chk.checked) return;
+      const seq = ++S.opSeq, res = applyGroupBulk(S.records, ids, gid, val, seq);
+      if (res.error) return;
+      S.lastGroupBulk = { ids: res.ids, value: val, seq, prev: res.prev }; S.grpSel = new Set(); res.ids.forEach(id => S.edit.delete(id)); fill();
+      live('この組の' + res.count + '件を「' + val + '」で確定しました。重複確認の状態は変更していません。未確認は残り' + unconfirmed() + '件です。直前の一括操作は取り消せます。'); dlg.close();
+    });
+    dlg.addEventListener('close', () => { dlg.remove(); const p = document.querySelector('#grpPanel summary'); if (p) p.focus(); });
+    dlg.append(h('h3', { id: 'grpTitle' }, '選択した' + rs.length + '件の最終区分を「' + val + '」にします'),
+      h('p', { class: 'note' }, '選択していない明細、重複確認の状態、別の組の明細は変更しません。この画面を開いただけでは、最終区分は変更されません。' + (same ? '（すでに「' + val + '」の明細が' + same + '件含まれます。それらは変わりません）' : '')),
+      h('div', { class: 'bulk-list', tabindex: '0', role: 'region', 'aria-label': '変更内容の一覧（スクロールできます）' }, rs.map(r => h('div', { class: 'bulk-row' },
+        h('div', { class: 'bt' }, '元データ' + r.rowNo + '行目　' + r.desc.trim() + '　' + amountText(r)),
+        h('div', { class: 'bs' }, 'ツール仕分け：' + r.toolCategory + '／重複確認：' + DUP_LABEL[dupStatusOf(r)]),
+        h('div', { class: 'bs' }, '最終区分：' + (r.finalCategory || '未確認') + ' → ' + val + (r.finalCategory === val ? '（変更なし）' : '')),
+        r.toolCategory === CAT.CHK ? h('p', { class: 'full' }, '【要判断】' + r.reason) : null))),
+      h('label', { class: 'chkrow', for: 'grpChk' }, chk, '上記の変更内容を確認しました'), h('div', { class: 'row' }, cancel, ok));
+    document.body.append(dlg); dlg.showModal(); cancel.focus();
+  }
+  function undoLast(){
+    const v = S.lastBulk ? S.lastBulk.value : ''; const t = undoBulk(S.records, S.lastBulk); S.lastBulk = null; t.forEach(r => S.edit.delete(r.id));
+    fill(); const s = bulkBox && bulkBox.querySelector('summary'); if (s) s.focus();
+    live('直前のまとめて確定（' + v + '）を取り消し、' + t.length + '件を未確認に戻しました。未確認は' + unconfirmed() + '件です。');
   }
   function openEdit(r){ S.edit.add(r.id); S.lastId = r.id; swap(r, '.choice button[aria-pressed="true"]'); }
   function closeEdit(r){ S.edit.delete(r.id); swap(r, '.chg'); }
   function fill(){
     S.filter = sel.value; S.keep = new Set();   // 絞り込み操作のたびに、最新の状態で一覧を作る
-    const f = S.records.filter(visible);
+    const f = S.records.filter(visible); if (S.filter === 'dup') f.sort((a, b) => a.dupGroup - b.dupGroup || a.rowNo - b.rowNo);   // 同じ組の明細を続けて表示する
     list.replaceChildren(...f.map(row), f.length ? '' : emptyNote()); refreshBar();
   }
-  sel.addEventListener('change', fill);
+  sel.addEventListener('change', () => { S.dupOnly = null; S.grpSel = new Set(); fill(); });
   function goNext(){   // 次の未確認カードへ移動するだけ。自動確定はしない
     const rest = S.records.filter(r => !r.finalCategory); if (!rest.length) return;
     const a = document.activeElement && document.activeElement.closest ? document.activeElement.closest('[data-id]') : null;
@@ -900,7 +1429,7 @@ function screenConfirm(){
     h('p', { class: 'note' }, '全明細について、理由を確認して最終区分を「事業」または「私用」から選んでください。要判断の明細も、本人が選ぶまで確定されません。確定済みの明細は「変更する」でいつでも再編集できます。'),
     reclassInfo()),
     h('div', { class: 'bar' }, un, prog, h('span', { class: 'sp' }),
-      h('label', { for: 'flt', style: 'margin:0;font-weight:400' }, '絞り込み'), sel, next), note, list,
+      h('label', { for: 'flt', style: 'margin:0;font-weight:400' }, '絞り込み'), sel, next), gnav, bulkBox, note, gbox, list,
     h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn', onclick: () => go(5) }, '最終確認へ進む')));
 }
 
@@ -923,35 +1452,47 @@ function screenFinal(){
   if (!countOk) reasons.push('件数または列構成の照合が一致していません。');
   if (!sumOk) reasons.push('金額合計の照合が一致していません。');
   if (!textOk) reasons.push('金額の表記が元データと一致していません。');
-  const btn = h('button', { type: 'button', class: 'btn', disabled: !ready, onclick: () => {
+  const btn = h('button', { type: 'button', class: 'btn', disabled: !ready, 'aria-describedby': ready ? null : 'blockWhy', onclick: () => {
     const c = buildCsv(S.records); const d = new Date();
     download(c.text, 'shiwake-note_' + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + '.csv');
   } }, 'CSVを出力する');
-  const diffs = recs.filter(finalDiff).length, dups = recs.filter(r => r.dup).length;
+  const diffs = recs.filter(finalDiff).length, dups = recs.filter(r => r.dupGroup).length, dupSets = dupGroups().length, dc = dupCounts(recs);
   return h('div', { class: 'card' }, h('h2', null, '⑤ 最終確認・CSV出力'),
-    h('p', { class: 'note' }, '全明細の最終区分が確定すると、CSVを出力できます。'),
+    h('p', { class: 'note' }, '全明細の最終区分が確定し、下の照合がすべて一致すると、CSVを出力できます。'),
+    h('p', { class: 'prog', id: 'progLine' }, '全 ' + recs.length + ' 件中、確認済み ' + (recs.length - un) + ' 件・未確認 ' + un + ' 件', un ? h('b', null, '　あと ' + un + ' 件の確認が必要です') : null),
     h('div', { class: 'cards' },
       h('div', { class: 'stat un' }, h('b', null, un), h('span', null, '未確認')),
       h('div', { class: 'stat biz' }, h('b', null, fin('事業')), h('span', null, '事業（確定）')),
       h('div', { class: 'stat priv' }, h('b', null, fin('私用')), h('span', null, '私用（確定）'))),
+    un ? h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn sub', id: 'goUn', onclick: () => { S.filter = 'un'; go(4); focusFirstCard(); } }, '未確認の明細を画面④で表示')) : null,
     h('h3', null, '件数・金額の照合'),
     h('dl', { class: 'kv' },
-      h('dt', null, '読込件数'), h('dd', null, read + '件'),
-      h('dt', null, '画面表示件数'), h('dd', null, shown + '件'),
-      h('dt', null, '出力件数'), h('dd', null, v.outCount + '件', mark(countOk)),
-      h('dt', null, '金額合計（符号なし・元データ→出力）'), h('dd', null, fmtYen(v.inSum) + '円 → ' + fmtYen(v.outSum) + '円', mark(sumOk)),
-      h('dt', null, '金額の表記（元データと同じ）'), h('dd', null, textOk ? '全件が元のとおり' : '一致しない行があります', mark(textOk))),
+      h('dt', null, '読み込み形式'), h('dd', null, formatLabel()),
+      h('dt', null, '読込件数'), h('dd', null, read + '件', h('span', { class: 'ex' }, 'CSVから読み込んだ明細の行数です。')),
+      h('dt', null, '画面表示件数'), h('dd', null, shown + '件', h('span', { class: 'ex' }, '画面③に表示される全明細の件数です（絞り込みの影響を受けません）。')),
+      h('dt', null, '出力件数'), h('dd', null, v.outCount + '件', mark(countOk), h('span', { class: 'ex' }, '出力するCSVの明細の行数です。読込件数・画面表示件数と同じである必要があります。')),
+      h('dt', null, '金額合計（符号なし・元データ→出力）'), h('dd', null, fmtYen(v.inSum) + '円 → ' + fmtYen(v.outSum) + '円', mark(sumOk), h('span', { class: 'ex' }, '入金・返金・重複の明細も含め、符号を除いて合計した、照合用の値です。重複を除いた実際の支出額や、収支ではありません。元データと出力CSVで、同じになることを確かめます。')),
+      h('dt', null, '金額の表記（元データと同じ）'), h('dd', null, textOk ? '全件が元のとおり' : '一致しない行があります', mark(textOk), h('span', { class: 'ex' }, '出力CSVの金額が、元データの表記のままかを確かめます。'))),
     diffs ? h('div', { class: 'msg info' },
       h('p', null, 'ツールの仕分けと異なる最終区分が' + diffs + '件あります。あなたの判断が優先されます。確認のための情報で、エラーではありません。このまま出力できます。'),
       h('button', { type: 'button', class: 'btn sub', onclick: () => { S.filter = 'diff'; go(4); focusFirstCard(); } }, '仕分けと異なる明細を画面④で表示')) : null,
-    dups ? h('div', { class: 'msg info' }, '重複の可能性がある明細が' + dups + '件あります（削除せずすべて出力します。理由欄に注記しています）。') : null,
+    dups ? h('div', { class: 'msg info' },
+      h('p', null, '重複の可能性のある明細が' + dups + '件（' + dupSets + '組）あります。同じ日付・摘要・金額の明細です。別々の取引の可能性もあるため、削除せずすべて出力します。重複確認は任意で、確定や出力は妨げません。'),
+      h('dl', { class: 'kv', id: 'dupBreak' },
+        h('dt', null, '重複候補'), h('dd', null, dc.total + '件（' + dc.groups + '組）'),
+        h('dt', null, '重複明細として記録'), h('dd', null, dc.duplicate + '件'),
+        h('dt', null, '別々の取引として確認'), h('dd', null, dc.separate + '件'),
+        h('dt', null, '重複未確認'), h('dd', null, dc.unconfirmed + '件')),
+      h('p', { class: 'note' }, '重複の確認結果は、CSVの理由欄の先頭に記載されます。元の明細はすべて保持し、出力します（削除しません）。'),
+      h('button', { type: 'button', class: 'btn sub', onclick: () => { S.filter = 'dup'; S.dupOnly = null; go(4); focusFirstCard(); } }, '重複の可能性のある明細を画面④で表示')) : null,
     csv.altered.length
       ? h('div', { class: 'msg warn' }, '次の' + csv.altered.length + '件は、表計算ソフトでの数式誤実行を防ぐため、出力CSVの値の先頭に「\'」を付けます（原文とは異なる出力になります。元データは変更していません）。',
           h('ul', { class: 'sm' }, csv.altered.slice(0, 20).map(a => h('li', null, '元データ' + a.rowNo + '行目・' + a.col + '：' + a.orig.slice(0, 40)))))
       : h('div', { class: 'msg ok' }, '日付・摘要・理由はすべて原文のまま出力されます（先頭が記号の値はありません）。'),
     h('div', { class: 'msg info' }, '出力列：' + OUT_HEADERS.join('／') + '（UTF-8 BOM付き）。日付・摘要・金額は、元データの表記のまま出力します。入金・返金の別は「理由」欄に記載しています。'),
+    ready ? null : h('div', { class: 'msg err', role: 'status', id: 'blockWhy' }, 'CSVを出力できません：' + reasons.join('')),
     h('div', { class: 'row' }, btn, h('button', { type: 'button', class: 'btn sub', onclick: () => go(4) }, '明細の確認へ戻る')),
-    ready ? null : h('div', { class: 'msg err', role: 'status' }, 'CSVを出力できません：' + reasons.join('')));
+    h('p', { class: 'note disc-inline', id: 'disclaimerInline' }, DISCLAIMER_TEXT));
 }
 
 /* ---- 描画 ---- */
